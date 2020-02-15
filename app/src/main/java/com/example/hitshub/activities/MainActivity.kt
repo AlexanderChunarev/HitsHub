@@ -1,7 +1,8 @@
-package com.example.hitshub
+package com.example.hitshub.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.hitshub.R
 
 class MainActivity : AppCompatActivity() {
 
