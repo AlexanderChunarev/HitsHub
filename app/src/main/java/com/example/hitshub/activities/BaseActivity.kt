@@ -13,10 +13,14 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.viewModel.showSpinner.observe(this, Observer {
+        viewModel.showSpinner.observe(this, Observer {
             changeSpinnerDialogState(it == true)
         })
     }
+
+    abstract fun observeAuthenticatedUser()
+
+    abstract fun observeUserInfo()
 
     fun navigateTo(clazz: Class<*>, user: User? = null) {
         val intent = Intent(this, clazz)

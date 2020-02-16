@@ -17,27 +17,31 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun checkUserAuntification() {
-        viewModel.apply {
-            setUserAuntificationInfo()
-            userAuntificationInfoLiveData.observe(this@SplashActivity, Observer {
-                if (!it.isAuth) {
-                    navigateTo(RegisterActivity::class.java)
-                    finish()
-                } else {
-                    getUserFromDataBase(it.uId)
-                }
-            })
-        }
+        viewModel.setUserAuntificationInfo()
+        observeAuthenticatedUser()
     }
 
     private fun getUserFromDataBase(id: String) {
-        viewModel.apply {
-            setUserByUid(id)
-            userLiveData.observe(this@SplashActivity, Observer {
-                val user = User(it.uId, it.name, it.email, it.avatarUrl)
-                navigateTo(MainActivity::class.java, user)
+        viewModel.setUserByUid(id)
+        observeUserInfo()
+    }
+
+    override fun observeAuthenticatedUser() {
+        viewModel.authenticatedUserLiveData.observe(this@SplashActivity, Observer {
+            if (!it.isAuth) {
+                navigateTo(RegisterActivity::class.java)
                 finish()
-            })
-        }
+            } else {
+                getUserFromDataBase(it.uId)
+            }
+        })
+    }
+
+    override fun observeUserInfo() {
+        viewModel.userInfoLiveData.observe(this@SplashActivity, Observer {
+            val user = User(it.uId, it.name, it.email, it.avatarUrl)
+            navigateTo(MainActivity::class.java, user)
+            finish()
+        })
     }
 }
