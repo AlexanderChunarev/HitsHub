@@ -6,4 +6,79 @@
     android:layout_height="match_parent"
     tools:context=".activities.SignInActivity">
 
+    <TextView
+        android:id="@+id/create_acc_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_back"
+        android:layout_marginTop="16dp"
+        app:layout_constraintVertical_bias="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sign_up_with_google_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/google_button_style"
+        android:drawableStart="@drawable/common_google_signin_btn_icon_light_focused"
+        android:text="@string/sign_in_with_google"
+        app:layout_constraintVertical_bias="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_acc_text" />
+
+    <EditText
+        android:id="@+id/email_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="@string/email"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sign_up_with_google_button" />
+
+    <EditText
+        android:id="@+id/password_editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/email_editText"
+        app:layout_constraintStart_toStartOf="@+id/email_editText"
+        app:layout_constraintTop_toBottomOf="@+id/email_editText"
+        app:layout_constraintVertical_bias="0" />
+
+    <Button
+        android:id="@+id/sing_up_with_email_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in_with_email"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+        android:background="@drawable/auth_activity_have_account_button_style"
+        android:layout_marginTop="8dp"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/email_editText"
+        app:layout_constraintStart_toStartOf="@+id/email_editText"
+        app:layout_constraintTop_toBottomOf="@+id/password_editText" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
