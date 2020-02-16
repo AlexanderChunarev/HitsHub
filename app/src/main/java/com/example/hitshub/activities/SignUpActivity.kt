@@ -22,13 +22,8 @@ class SignUpActivity : BaseActivity() {
         setContentView(R.layout.activity_sign_up)
 
         sign_up_with_google_button.setOnClickListener {
-            signIn()
+            googleSignInHelper.startSignInIntent(this)
         }
-    }
-
-    private fun signIn() {
-        val signInIntent = googleSignInHelper.googleSingInClient.signInIntent
-        startActivityForResult(signInIntent, SING_IN_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -43,29 +38,33 @@ class SignUpActivity : BaseActivity() {
     }
 
     private fun signInWithGoogleAuthCredential(googleAuthCredential: AuthCredential) {
-        this.viewModel.apply {
-            singInWithGoogle(googleAuthCredential)
-            authenticatedUserLiveData.observe(this@SignUpActivity, Observer {
-                if (it.isNew) {
-                    createNewUser(it)
-                    navigateTo(MainActivity::class.java, it)
-                    finishAffinity()
-                } else {
-                    toastMessage(it.name)
-                }
-            })
-        }
+        viewModel.singInWithGoogle(googleAuthCredential)
+        observeAuthenticatedUser()
     }
 
     private fun createNewUser(user: User) {
-        this.viewModel.apply {
-            createAccount(user)
-            createdUserLiveData.observe(this@SignUpActivity, Observer {
-                if (it.isCreated) {
-                    toastMessage(it.name)
-                }
-            })
-        }
+        viewModel.createAccount(user)
+        observeUserInfo()
+    }
+
+    override fun observeAuthenticatedUser() {
+        viewModel.authenticatedUserLiveData.observe(this@SignUpActivity, Observer {
+            if (it.isNew) {
+                createNewUser(it)
+                navigateTo(MainActivity::class.java, it)
+                finishAffinity()
+            } else {
+                toastMessage(it.name)
+            }
+        })
+    }
+
+    override fun observeUserInfo() {
+        viewModel.userInfoLiveData.observe(this@SignUpActivity, Observer {
+            if (it.isCreated) {
+                toastMessage(it.name)
+            }
+        })
     }
 
     private fun toastMessage(name: String) {

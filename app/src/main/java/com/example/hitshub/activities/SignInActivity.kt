@@ -14,4 +14,8 @@ class SignInActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
     }
+
+    override fun observeAuthenticatedUser() {}
+
+    override fun observeUserInfo() {}
 }
