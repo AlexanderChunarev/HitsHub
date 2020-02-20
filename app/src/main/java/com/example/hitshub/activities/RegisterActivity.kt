@@ -13,9 +13,10 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         create_account_button.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
+            startActivity(Intent(this, SignInActivity::class.java))
         }
 
-        have_account_button.setOnClickListener {}
+        have_account_button.setOnClickListener {
+        }
     }
 }
