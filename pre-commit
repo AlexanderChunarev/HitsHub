@@ -1,0 +1,18 @@
+#!/bin/sh
+
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+no_color='\033[0m'
+
+echo -e "\n${green}Executing pre-commit hook${no_color}\n"
+
+git diff --name-only --cached --relative | grep '\.kt[s"]\?$' | ./gradlew ktlintCheck
+status=$?
+if [ "$status" = 0 ] ; then
+	echo -e "\n${green}Changes successfuly commited${no_color}\n"
+	exit 0
+else
+	echo -e "\n${red}FAILURE: Build cannot commit changes because error occured. See logs to see errors${no_color}\n"
+	exit 1
+fi
