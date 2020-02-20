@@ -2,7 +2,9 @@ package com.example.hitshub.utils
 
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import com.example.hitshub.R
+import com.example.hitshub.activities.BaseActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,6 +21,11 @@ class GoogleSignInHelper {
             .requestEmail()
             .build()
         googleSingInClient = GoogleSignIn.getClient(context, googleOptions)
+    }
+
+    fun startSignInIntent(activity: AppCompatActivity) {
+        val signInIntent = googleSingInClient.signInIntent
+        activity.startActivityForResult(signInIntent, BaseActivity.SING_IN_CODE)
     }
 
     fun getSingedInAccountByIntent(data: Intent?): GoogleSignInAccount? {
