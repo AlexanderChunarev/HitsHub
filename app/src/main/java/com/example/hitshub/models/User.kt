@@ -13,7 +13,9 @@ data class User(
     @Exclude
     var isCreated: Boolean = false,
     @Exclude
-    var isNew: Boolean = false
+    var isNew: Boolean = false,
+    @Exclude
+    var isAnonymous: Boolean = false
 ) : Serializable {
 
     constructor() : this("", "", "", "")

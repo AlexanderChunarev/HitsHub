@@ -38,28 +38,21 @@ class SignInActivity : BaseActivity() {
 
     private fun signInWithGoogleAuthCredential(googleAuthCredential: AuthCredential) {
         viewModel.singInWithGoogle(googleAuthCredential)
-        observeAuthenticatedUser()
+        observe()
     }
 
     private fun createNewUser(user: User) {
         viewModel.createAccount(user)
-        observeUserInfo()
     }
 
-    override fun observeAuthenticatedUser() {
-        viewModel.authenticatedUserLiveData.observe(this, Observer {
-            if (it.isNew) {
-                createNewUser(it)
-                navigateTo(MainActivity::class.java, it)
-                finishAffinity()
-            } else {
-                navigateTo(MainActivity::class.java, it)
-            }
-        })
-    }
-
-    override fun observeUserInfo() {
-        viewModel.userInfoLiveData.observe(this, Observer {
-        })
+    override fun observeUserInfo(user: User) {
+        if (user.isNew) {
+            createNewUser(user)
+            navigateTo(MainActivity::class.java, user)
+            finishAffinity()
+        } else {
+            navigateTo(MainActivity::class.java, user)
+            finishAffinity()
+        }
     }
 }

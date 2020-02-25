@@ -37,4 +37,19 @@ class AuthRepository : BaseRepository() {
             }
         }
     }
+
+    fun signInAnonymously() {
+        val user = User()
+        firebaseAuth.signInAnonymously().addOnSuccessListener {
+            firebaseAuth.currentUser.apply {
+                if (this != null) {
+                    user.apply {
+                        uId = uid
+                        isAnonymous = true
+                    }
+                    userData.value = user
+                }
+            }
+        }
+    }
 }

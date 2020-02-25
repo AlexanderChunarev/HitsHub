@@ -15,6 +15,13 @@ class RegisterViewModel : BaseViewModel(), LifecycleObserver {
         _showSpinner.value = false
     }
 
+    fun signInAnonymously() {
+        _showSpinner.value = true
+        authRepository.signInAnonymously()
+        _authenticatedUserLiveData = authRepository.userData
+        _showSpinner.value = false
+    }
+
     fun createAccount(user: User) {
         _showSpinner.value = true
         authRepository.createNewUser(user)

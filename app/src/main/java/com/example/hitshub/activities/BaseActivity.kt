@@ -18,9 +18,13 @@ abstract class BaseActivity : AppCompatActivity() {
         })
     }
 
-    abstract fun observeAuthenticatedUser()
+    abstract fun observeUserInfo(user: User)
 
-    abstract fun observeUserInfo()
+    fun observe() {
+        viewModel.authenticatedUserLiveData.observe(this, Observer {
+            observeUserInfo(it)
+        })
+    }
 
     fun navigateTo(clazz: Class<*>, user: User? = null) {
         val intent = Intent(this, clazz)

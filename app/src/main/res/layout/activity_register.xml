@@ -71,14 +71,14 @@
         android:text="@string/get_started"
         android:textColor="@android:color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-        app:layout_constraintBottom_toTopOf="@+id/have_account_button"
+        app:layout_constraintBottom_toTopOf="@+id/anonymous_login_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/logo_guideline"
         app:layout_constraintVertical_bias="1" />
 
     <Button
-        android:id="@+id/have_account_button"
+        android:id="@+id/anonymous_login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_button_style"
