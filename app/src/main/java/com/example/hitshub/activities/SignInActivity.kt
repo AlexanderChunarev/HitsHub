@@ -2,7 +2,6 @@ package com.example.hitshub.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
 import com.example.hitshub.models.User

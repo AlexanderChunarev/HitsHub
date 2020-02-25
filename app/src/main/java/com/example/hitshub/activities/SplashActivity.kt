@@ -28,7 +28,6 @@ class SplashActivity : BaseActivity() {
             navigateTo(MainActivity::class.java, user)
             finish()
         })
-
     }
 
     override fun observeUserInfo(user: User) {
