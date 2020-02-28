@@ -2,13 +2,10 @@ package com.example.hitshub.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
 import com.example.hitshub.models.User
 import com.example.hitshub.utils.GoogleSignInHelper
-import com.example.hitshub.utils.MessageUtils
 import com.example.hitshub.viewmodels.RegisterViewModel
 import com.google.firebase.auth.AuthCredential
 import kotlinx.android.synthetic.main.activity_sign_in.*
