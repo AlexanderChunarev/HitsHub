@@ -2,9 +2,11 @@ package com.example.hitshub.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.hitshub.models.User
+import com.example.hitshub.utils.MessageUtils
 import com.example.hitshub.viewmodels.BaseViewModel
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -15,6 +17,16 @@ abstract class BaseActivity : AppCompatActivity() {
 
         viewModel.showSpinner.observe(this, Observer {
             changeSpinnerDialogState(it == true)
+        })
+
+        viewModel.message.observe(this, Observer {
+            when (it) {
+                is MessageUtils.ErrorMessage -> Toast.makeText(
+                    this,
+                    it.errorString,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         })
     }
 

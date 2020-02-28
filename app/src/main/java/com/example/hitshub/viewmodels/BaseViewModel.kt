@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.hitshub.models.User
+import com.example.hitshub.utils.MessageUtils
 
 abstract class BaseViewModel : ViewModel() {
     protected val _showSpinner = MutableLiveData<Boolean>()
@@ -14,4 +15,7 @@ abstract class BaseViewModel : ViewModel() {
 
     protected var _userInfoLiveData = MutableLiveData<User>()
     val userInfoLiveData: LiveData<User> get() = _userInfoLiveData
+
+    protected val _message = SingleLiveEvent<MessageUtils>()
+    val message: LiveData<MessageUtils> get() = _message
 }

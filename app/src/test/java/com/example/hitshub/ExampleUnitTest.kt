@@ -27,6 +27,22 @@ class ExampleUnitTest {
         "mkyong@mkyong@gmail.com", "mkyong@gmail.com.1a"
     )
 
+    private val validPasswords = listOf(
+        "testpassword",
+        "1test1password22",
+        "tEsTPasswoRD",
+        "1tEsTP2asswoR33D"
+    )
+
+    private val invalidPasswords = listOf(
+        "test password",
+        ".testpassword",
+        ".testpassword",
+        "testpass%word",
+        "#testpassword",
+        "test-password"
+    )
+
     @Test
     fun test_valid_email_validation() {
         validEmails.forEach {
@@ -38,6 +54,20 @@ class ExampleUnitTest {
     fun test_invalid_email_validation() {
         invalidEmails.forEach {
             assertEquals(false, ValidationUtils.isEmailValid(it))
+        }
+    }
+
+    @Test
+    fun test_valid_password() {
+        validPasswords.forEach {
+            assertEquals(true, ValidationUtils.isPasswordValid(it))
+        }
+    }
+
+    @Test
+    fun test_invalid_password() {
+        invalidPasswords.forEach {
+            assertEquals(false, ValidationUtils.isPasswordValid(it))
         }
     }
 }
