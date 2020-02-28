@@ -3,11 +3,13 @@ package com.example.hitshub.repositories
 import androidx.lifecycle.MutableLiveData
 import com.example.hitshub.models.User
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseUser
 
 class AuthRepository : BaseRepository() {
     val userData by lazy { MutableLiveData<User>() }
 
-    fun createNewUser(authenticatedUser: User) {
+    fun saveUserToFireStore(authenticatedUser: User) {
         val uidRef = userReference.document(authenticatedUser.uId)
         uidRef.get().addOnSuccessListener {
             if (!it!!.exists()) {
@@ -20,36 +22,48 @@ class AuthRepository : BaseRepository() {
     }
 
     fun singInWithGoogle(authCredential: AuthCredential) {
-        val user = User()
         firebaseAuth.signInWithCredential(authCredential).addOnSuccessListener {
-            val isNewUser = it.additionalUserInfo!!.isNewUser
-            firebaseAuth.currentUser.apply {
-                if (this != null) {
-                    user.apply {
-                        uId = uid
-                        name = displayName.toString()
-                        email = getEmail().toString()
-                        avatarUrl = photoUrl.toString()
-                        isNew = isNewUser
-                    }
-                    userData.value = user
-                }
-            }
+            it.init()
         }
     }
 
     fun signInAnonymously() {
-        val user = User()
         firebaseAuth.signInAnonymously().addOnSuccessListener {
-            firebaseAuth.currentUser.apply {
-                if (this != null) {
-                    user.apply {
-                        uId = uid
-                        isAnonymous = true
-                    }
-                    userData.value = user
-                }
+            it.init()
+        }
+    }
+
+    fun singUpWithEmailAndPassword(email: String, password: String) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
+            it.init()
+        }
+    }
+
+    fun singInWithEmailAndPassword(email: String, password: String) {
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+            it.init()
+        }
+    }
+
+    private fun FirebaseUser.setUser(isNewUser: Boolean): User {
+        return User().apply {
+            uId = uid
+            name = displayName.toString()
+            email = getEmail().toString()
+            avatarUrl = photoUrl.toString()
+            isNew = isNewUser
+            isAnonymous = isAnonymous()
+        }
+    }
+
+    private fun AuthResult.init() {
+        val isNewUser = this.additionalUserInfo!!.isNewUser
+        firebaseAuth.currentUser.apply {
+            if (this != null) {
+                userData.value = setUser(isNewUser)
             }
         }
     }
 }
+
+

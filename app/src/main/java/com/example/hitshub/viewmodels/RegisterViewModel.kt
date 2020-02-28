@@ -15,6 +15,20 @@ class RegisterViewModel : BaseViewModel(), LifecycleObserver {
         _showSpinner.value = false
     }
 
+    fun signUpWithEmailAndPassword(email: String, password: String) {
+        _showSpinner.value = true
+        authRepository.singUpWithEmailAndPassword(email, password)
+        _authenticatedUserLiveData = authRepository.userData
+        _showSpinner.value = false
+    }
+
+    fun signInWithEmailAndPassword(email: String, password: String) {
+        _showSpinner.value = true
+        authRepository.singInWithEmailAndPassword(email, password)
+        _authenticatedUserLiveData = authRepository.userData
+        _showSpinner.value = false
+    }
+
     fun signInAnonymously() {
         _showSpinner.value = true
         authRepository.signInAnonymously()
@@ -22,9 +36,9 @@ class RegisterViewModel : BaseViewModel(), LifecycleObserver {
         _showSpinner.value = false
     }
 
-    fun createAccount(user: User) {
+    fun saveUserToFireStore(user: User) {
         _showSpinner.value = true
-        authRepository.createNewUser(user)
+        authRepository.saveUserToFireStore(user)
         _userInfoLiveData = authRepository.userData
         _showSpinner.value = false
     }

@@ -22,6 +22,20 @@ class SignInActivity : BaseActivity() {
         sign_in_with_google_button.setOnClickListener {
             googleSignInHelper.startSignInIntent(this)
         }
+
+        sing_in_with_email_button.setOnClickListener {
+            signInWithEmailAndPassword(
+                email_editText.text.toString(),
+                password_editText.text.toString()
+            )
+        }
+
+        sign_up_with_email_button.setOnClickListener {
+            signUpWithEmailAndPassword(
+                email_editText.text.toString(),
+                password_editText.text.toString()
+            )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -40,13 +54,23 @@ class SignInActivity : BaseActivity() {
         observe()
     }
 
-    private fun createNewUser(user: User) {
-        viewModel.createAccount(user)
+    private fun signUpWithEmailAndPassword(email: String, password: String) {
+        viewModel.signUpWithEmailAndPassword(email, password)
+        observe()
+    }
+
+    private fun signInWithEmailAndPassword(email: String, password: String) {
+        viewModel.signInWithEmailAndPassword(email, password)
+        observe()
+    }
+
+    private fun saveUserToFireStore(user: User) {
+        viewModel.saveUserToFireStore(user)
     }
 
     override fun observeUserInfo(user: User) {
         if (user.isNew) {
-            createNewUser(user)
+            saveUserToFireStore(user)
             navigateTo(MainActivity::class.java, user)
             finishAffinity()
         } else {

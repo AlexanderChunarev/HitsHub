@@ -23,7 +23,6 @@ class RegisterActivity : BaseActivity() {
 
         anonymous_login_button.setOnClickListener {
             viewModel.signInAnonymously()
-            observe()
         }
     }
 
