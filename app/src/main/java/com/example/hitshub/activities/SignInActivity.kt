@@ -2,7 +2,6 @@ package com.example.hitshub.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
 import com.example.hitshub.models.User
@@ -23,6 +22,20 @@ class SignInActivity : BaseActivity() {
         sign_in_with_google_button.setOnClickListener {
             googleSignInHelper.startSignInIntent(this)
         }
+
+        sing_in_with_email_button.setOnClickListener {
+            signInWithEmailAndPassword(
+                email_editText.text.toString(),
+                password_editText.text.toString()
+            )
+        }
+
+        sign_up_with_email_button.setOnClickListener {
+            signUpWithEmailAndPassword(
+                email_editText.text.toString(),
+                password_editText.text.toString()
+            )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -38,28 +51,31 @@ class SignInActivity : BaseActivity() {
 
     private fun signInWithGoogleAuthCredential(googleAuthCredential: AuthCredential) {
         viewModel.singInWithGoogle(googleAuthCredential)
-        observeAuthenticatedUser()
+        observe()
     }
 
-    private fun createNewUser(user: User) {
-        viewModel.createAccount(user)
-        observeUserInfo()
+    private fun signUpWithEmailAndPassword(email: String, password: String) {
+        viewModel.signUpWithEmailAndPassword(email, password)
+        observe()
     }
 
-    override fun observeAuthenticatedUser() {
-        viewModel.authenticatedUserLiveData.observe(this, Observer {
-            if (it.isNew) {
-                createNewUser(it)
-                navigateTo(MainActivity::class.java, it)
-                finishAffinity()
-            } else {
-                navigateTo(MainActivity::class.java, it)
-            }
-        })
+    private fun signInWithEmailAndPassword(email: String, password: String) {
+        viewModel.signInWithEmailAndPassword(email, password)
+        observe()
     }
 
-    override fun observeUserInfo() {
-        viewModel.userInfoLiveData.observe(this, Observer {
-        })
+    private fun saveUserToFireStore(user: User) {
+        viewModel.saveUserToFireStore(user)
+    }
+
+    override fun observeUserInfo(user: User) {
+        if (user.isNew) {
+            saveUserToFireStore(user)
+            navigateTo(MainActivity::class.java, user)
+            finishAffinity()
+        } else {
+            navigateTo(MainActivity::class.java, user)
+            finishAffinity()
+        }
     }
 }

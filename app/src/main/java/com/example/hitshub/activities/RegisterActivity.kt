@@ -1,12 +1,17 @@
 package com.example.hitshub.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
+import com.example.hitshub.models.User
+import com.example.hitshub.viewmodels.RegisterViewModel
 import kotlinx.android.synthetic.main.activity_register.*
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity() {
+    override val viewModel by lazy {
+        ViewModelProvider(this).get(RegisterViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +21,14 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, SignInActivity::class.java))
         }
 
-        have_account_button.setOnClickListener {
+        anonymous_login_button.setOnClickListener {
+            viewModel.signInAnonymously()
+            observe()
         }
+    }
+
+    override fun observeUserInfo(user: User) {
+        navigateTo(MainActivity::class.java, user)
+        finishAffinity()
     }
 }

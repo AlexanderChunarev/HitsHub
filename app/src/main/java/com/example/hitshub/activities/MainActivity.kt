@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         initGoogleSingInClient()
         val user = intent.getSerializableExtra(USER) as User
-        textView2.text = user.name
+        textView2.text = user.uId
         textView3.text = user.email
     }
 

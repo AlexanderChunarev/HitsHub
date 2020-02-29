@@ -21,10 +21,20 @@ class SplashRepository : BaseRepository() {
         }
     }
 
-    fun fetchUser(id: String) {
-        userReference.document(id).get().addOnSuccessListener { document ->
-            if (document?.exists()!!) {
-                fetchedUserData.value = document.toObject(User::class.java)!!
+    fun fetchUser() {
+        val user = User()
+        firebaseAuth.currentUser.apply {
+            if (this != null && this.isAnonymous) {
+                fetchedUserData.value = user.apply {
+                    uId = uid
+                    isAnonymous = isAnonymous()
+                }
+            } else {
+                userReference.document(this!!.uid).get().addOnSuccessListener { document ->
+                    if (document?.exists()!!) {
+                        fetchedUserData.value = document.toObject(User::class.java)!!
+                    }
+                }
             }
         }
     }

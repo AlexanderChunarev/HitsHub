@@ -10,8 +10,8 @@ class SplashViewModel : BaseViewModel() {
         _authenticatedUserLiveData = splashRepository.userAuntificationData
     }
 
-    fun setUserByUid(id: String) {
-        splashRepository.fetchUser(id)
+    fun setUser() {
+        splashRepository.fetchUser()
         _userInfoLiveData = splashRepository.fetchedUserData
     }
 }
