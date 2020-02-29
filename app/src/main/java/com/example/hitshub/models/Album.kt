@@ -10,5 +10,7 @@ data class Album(
     @Json(name = "title")
     val title: String,
     @Json(name = "tracks")
-    val data: AlbumData
+    val data: AlbumData,
+    @Json(name = "picture")
+    val picture_album_url: String
 )
