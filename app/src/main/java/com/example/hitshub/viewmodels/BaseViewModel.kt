@@ -10,10 +10,10 @@ abstract class BaseViewModel : ViewModel() {
     protected val _showSpinner = MutableLiveData<Boolean>()
     val showSpinner: LiveData<Boolean> get() = _showSpinner
 
-    protected var _authenticatedUserLiveData = MutableLiveData<User>()
+    protected lateinit var _authenticatedUserLiveData: MutableLiveData<User>
     val authenticatedUserLiveData: LiveData<User> get() = _authenticatedUserLiveData
 
-    protected var _userInfoLiveData = MutableLiveData<User>()
+    protected lateinit var _userInfoLiveData: MutableLiveData<User>
     val userInfoLiveData: LiveData<User> get() = _userInfoLiveData
 
     protected val _message = SingleLiveEvent<MessageUtils>()
