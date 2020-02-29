@@ -33,7 +33,8 @@ class ServiceBuilder {
                 connectTimeout(30, TimeUnit.SECONDS)
                 readTimeout(30, TimeUnit.SECONDS)
                 level = HttpLoggingInterceptor.Level.BASIC
-            })
+            }
+        )
     }
 
     companion object {
