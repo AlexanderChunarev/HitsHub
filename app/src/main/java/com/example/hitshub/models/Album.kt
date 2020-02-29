@@ -9,6 +9,8 @@ data class Album(
     val id: Long,
     @Json(name = "title")
     val title: String,
+    @Json(name = "cover")
+    val cover_url: String,
     @Json(name = "tracks")
     val data: AlbumData,
     @Json(name = "picture")
