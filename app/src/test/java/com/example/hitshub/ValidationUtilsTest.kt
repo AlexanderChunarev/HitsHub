@@ -9,7 +9,7 @@ import org.junit.Test
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class ValidationUtilsTest {
     private val validEmails = listOf(
         "mkyong@yahoo.com",
         "mkyong100@yahoo.com", "mkyong.100@yahoo.com",
