@@ -1,28 +1,32 @@
 package com.example.hitshub.repositories
 
 import com.example.hitshub.builders.ServiceBuilder
-import com.example.hitshub.models.Album
-import com.example.hitshub.models.Track
+import com.example.hitshub.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.await
 
 class DeezerRepository {
+    private val serviceBuilder by lazy { ServiceBuilder.getInstance().buildService() }
 
-    private val serviceBuilder by lazy { ServiceBuilder.getInstance() }
-
-    suspend fun fetchAlbumById(id: String): Album = withContext(Dispatchers.IO) {
-        var album: Album
-        serviceBuilder.buildService().apply {
-            album = getAlbumById(id).execute().body()!!
-        }
-        album
+    suspend fun fetchAlbumByName(name: String): SearchAlbums = withContext(Dispatchers.IO) {
+        serviceBuilder.searchAlbumByName(name).await()
     }
 
-    suspend fun fetchTrackById(id: String): Track = withContext(Dispatchers.IO) {
-        var track: Track
-        serviceBuilder.buildService().apply {
-            track = getTrackById(id).execute().body()!!
-        }
-        track
+    suspend fun fetchTrackByName(name: String): SearchedTrackData = withContext(Dispatchers.IO) {
+        serviceBuilder.searchTrackByName(name).await()
     }
+
+    suspend fun fetchTracksByChart(): TracksData = withContext(Dispatchers.IO) {
+        serviceBuilder.getTrackByChart().await()
+    }
+
+    suspend fun fetchAlbumByChart(): ChartAlbums = withContext(Dispatchers.IO) {
+        serviceBuilder.getAlbumByChart().await()
+    }
+
+    suspend fun fetchAlbumDataById(id : Long): AlbumData = withContext(Dispatchers.IO) {
+        serviceBuilder.getAlbumDataById(id).await()
+    }
+
 }
