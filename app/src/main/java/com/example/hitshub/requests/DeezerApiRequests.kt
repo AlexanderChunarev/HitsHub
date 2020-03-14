@@ -1,6 +1,11 @@
 package com.example.hitshub.requests
 
-import com.example.hitshub.models.*
+import com.example.hitshub.models.album.Album
+import com.example.hitshub.models.chart.album.AlbumChartData
+import com.example.hitshub.models.chart.track.ChartTracksData
+import com.example.hitshub.models.search.album.AlbumData
+import com.example.hitshub.models.search.track.TrackData
+import com.example.hitshub.models.track.Track
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -9,18 +14,20 @@ import retrofit2.http.Query
 interface DeezerApiRequests {
 
     @GET("/search/album")
-    fun searchAlbumByName(@Query("q") name: String): Call<SearchAlbums>
+    fun searchAlbumByName(@Query("q") name: String): Call<AlbumData>
 
     @GET("/search/track")
-    fun searchTrackByName(@Query("q") name: String): Call<SearchedTrackData>
+    fun searchTrackByName(@Query("q") name: String): Call<TrackData>
 
     @GET("/chart/0/tracks")
-    fun getTrackByChart(): Call<TracksData>
+    fun getTrackByChart(): Call<ChartTracksData>
 
     @GET("/chart/0/albums")
-    fun getAlbumByChart(): Call<ChartAlbums>
+    fun getAlbumByChart(): Call<AlbumChartData>
 
     @GET("/album/{id}")
-    fun getAlbumDataById(@Path("id")id : Long): Call<AlbumData>
+    fun getAlbumDataById(@Path("id")id: Long): Call<Album>
 
+    @GET("/track/{id}")
+    fun getTrackById(@Path("id")id: Long): Call<Track>
 }

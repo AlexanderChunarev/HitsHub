@@ -10,50 +10,44 @@ class TestApi {
     val deezerRepository by lazy { DeezerRepository() }
 
     @Test
-    fun testFetchAlbumByName(){
+    fun testFetchAlbumByName() {
         runBlocking {
-            deezerRepository.fetchAlbumByName("eminem").searchedAlbums.forEach {
-                println(it)
-            }
             Assert.assertNotNull(deezerRepository.fetchAlbumByName("eminem"))
         }
     }
 
     @Test
-    fun testFetchAlbumByChart(){
+    fun testFetchAlbumByChart() {
         runBlocking {
-            deezerRepository.fetchAlbumByChart().data.forEach {
-                println(it)
-            }
+            Assert.assertNotNull(deezerRepository.fetchAlbumByChart())
         }
     }
 
     @Test
-    fun testFetchAlbumDataById(){
+    fun testFetchAlbumDataById() {
         runBlocking {
-            deezerRepository.fetchAlbumDataById(302127).tracks.data.forEach {
-                println(it)
-            }
+            Assert.assertNotNull(deezerRepository.fetchAlbumDataById(302127))
         }
     }
 
     @Test
-    fun testFetchChartTracks(){
+    fun testFetchTrackById() {
         runBlocking {
-            deezerRepository.fetchTracksByChart().data.forEach {
-                println(it)
-            }
+            Assert.assertNotNull(deezerRepository.fetchTrackById(3135556))
         }
     }
 
     @Test
-    fun testFetchSearchedTracksByName(){
+    fun testFetchChartTracks() {
         runBlocking {
-            deezerRepository.fetchTrackByName("Chlorine").data.forEach {
-                println(it)
-            }
+            Assert.assertNotNull(deezerRepository.fetchTracksByChart())
         }
     }
 
-
+    @Test
+    fun testFetchSearchedTracksByName() {
+        runBlocking {
+            Assert.assertNotNull(deezerRepository.fetchTrackByName("Chlorine"))
+        }
+    }
 }

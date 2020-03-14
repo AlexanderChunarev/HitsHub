@@ -1,7 +1,7 @@
 package com.example.hitshub.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.hitshub.R
 import com.example.hitshub.activities.BaseActivity.Companion.USER
 import com.example.hitshub.models.User
