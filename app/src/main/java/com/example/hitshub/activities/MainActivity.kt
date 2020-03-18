@@ -1,10 +1,12 @@
 package com.example.hitshub.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.hitshub.R
-import com.example.hitshub.activities.BaseActivity.Companion.USER
-import com.example.hitshub.models.User
+import com.example.hitshub.fragments.HomeFragment
+import com.example.hitshub.fragments.ProfileFragment
+import com.example.hitshub.fragments.SearchFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -17,10 +19,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (savedInstanceState == null) {
+            HomeFragment().switch()
+        }
+
         initGoogleSingInClient()
-        val user = intent.getSerializableExtra(USER) as User
-        textView2.text = user.uId
-        textView3.text = user.email
+//        val user = intent.getSerializableExtra(USER) as User
+//        textView2.text = user.uId
+//        textView3.text = user.email
+
+        nav_view.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_home -> HomeFragment().switch()
+                R.id.navigation_profile -> ProfileFragment().switch()
+                R.id.navigation_search -> SearchFragment().switch()
+            }
+            return@setOnNavigationItemSelectedListener true
+        }
     }
 
     private fun initGoogleSingInClient() {
@@ -30,5 +45,12 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         googleSingInClient = GoogleSignIn.getClient(this, googleOptions)
+    }
+
+    private fun Fragment.switch() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, this)
+            .commit()
     }
 }
