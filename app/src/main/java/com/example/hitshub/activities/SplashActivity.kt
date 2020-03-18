@@ -18,30 +18,30 @@ class SplashActivity : BaseActivity() {
 
     private fun checkUserAuntification() {
         viewModel.setUserAuntificationInfo()
-        observeAuthenticatedUser()
+        observe()
     }
 
-    private fun getUserFromDataBase(id: String) {
-        viewModel.setUserByUid(id)
-        observeUserInfo()
-    }
-
-    override fun observeAuthenticatedUser() {
-        viewModel.authenticatedUserLiveData.observe(this@SplashActivity, Observer {
-            if (!it.isAuth) {
-                navigateTo(RegisterActivity::class.java)
-                finish()
-            } else {
-                getUserFromDataBase(it.uId)
-            }
-        })
-    }
-
-    override fun observeUserInfo() {
+    private fun getUserFromDataBase() {
+        viewModel.setUser()
         viewModel.userInfoLiveData.observe(this@SplashActivity, Observer {
             val user = User(it.uId, it.name, it.email, it.avatarUrl)
             navigateTo(MainActivity::class.java, user)
             finish()
         })
+    }
+
+    override fun observeUserInfo(user: User) {
+        when {
+            user.isAnonymous -> {
+                navigateTo(MainActivity::class.java, user)
+            }
+            !user.isAuth -> {
+                navigateTo(RegisterActivity::class.java)
+                finish()
+            }
+            else -> {
+                getUserFromDataBase()
+            }
+        }
     }
 }
