@@ -1,4 +1,4 @@
-package com.example.hitshub.models.album
+package com.example.hitshub.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -14,4 +14,18 @@ data class Album(
     val artist: Artist,
     @Json(name = "tracks")
     val albumTracks: AlbumTracks
+) : IAlbum
+
+data class AlbumTracks(
+    @Json(name = "data")
+    val data: List<AlbumTrack>
 )
+
+data class AlbumTrack(
+    @Json(name = "id")
+    val id: Long,
+    @Json(name = "title")
+    val title: String,
+    @Json(name = "preview")
+    val preview: String
+) : ITrack

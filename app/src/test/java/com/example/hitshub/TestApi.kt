@@ -1,6 +1,7 @@
 package com.example.hitshub
 
 import com.example.hitshub.repositories.DeezerRepository
+import junit.framework.Assert.assertNotNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
