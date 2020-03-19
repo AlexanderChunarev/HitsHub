@@ -2,12 +2,6 @@ package com.example.hitshub.repositories
 
 import com.example.hitshub.builders.ServiceBuilder
 import com.example.hitshub.models.*
-import com.example.hitshub.models.album.Album
-import com.example.hitshub.models.chart.album.AlbumChartData
-import com.example.hitshub.models.chart.track.ChartTracksData
-import com.example.hitshub.models.search.album.AlbumData
-import com.example.hitshub.models.search.track.TrackData
-import com.example.hitshub.models.track.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.await

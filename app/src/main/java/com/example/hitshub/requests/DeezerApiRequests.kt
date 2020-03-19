@@ -1,11 +1,6 @@
 package com.example.hitshub.requests
 
-import com.example.hitshub.models.album.Album
-import com.example.hitshub.models.chart.album.AlbumChartData
-import com.example.hitshub.models.chart.track.ChartTracksData
-import com.example.hitshub.models.search.album.AlbumData
-import com.example.hitshub.models.search.track.TrackData
-import com.example.hitshub.models.track.Track
+import com.example.hitshub.models.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
