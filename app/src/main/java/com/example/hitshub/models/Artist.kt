@@ -1,4 +1,4 @@
-package com.example.hitshub.models.album
+package com.example.hitshub.models
 
 import com.squareup.moshi.Json
 
