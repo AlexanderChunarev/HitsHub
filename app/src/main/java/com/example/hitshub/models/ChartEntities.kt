@@ -9,14 +9,14 @@ data class ChartTracksData(
 
 data class ChartTrack(
     @Json(name = "id")
-    val id: Long,
+    override val id: Long,
     @Json(name = "title")
-    val title: String,
+    override val title: String,
     @Json(name = "preview")
-    val preview: String,
+    override val preview: String,
     @Json(name = "position")
     val position: Int,
-    val artist: Artist
+    override val artist: Artist
 ) : ITrack
 
 data class AlbumChartData(
