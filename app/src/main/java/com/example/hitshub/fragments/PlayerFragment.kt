@@ -70,6 +70,12 @@ class PlayerFragment : Fragment() {
                 play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
             }
         }
+
+        fast_forward_button.setOnClickListener {
+        }
+
+        fast_rewind_button.setOnClickListener {
+        }
     }
 
     private fun startMediaPlayerService() {
