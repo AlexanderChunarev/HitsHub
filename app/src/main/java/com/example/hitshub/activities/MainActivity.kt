@@ -1,16 +1,12 @@
 package com.example.hitshub.activities
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.hitshub.R
 import com.example.hitshub.fragments.HomeFragment
-import com.example.hitshub.fragments.PlayerFragment
 import com.example.hitshub.fragments.ProfileFragment
 import com.example.hitshub.fragments.SearchFragment
-import com.example.hitshub.models.Artist
-import com.example.hitshub.models.Track
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,13 +18,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val fakeTrack = Track(111, "adasda", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-5.mp3", Artist(2, "", ""))
         if (savedInstanceState == null) {
-            nav_view.visibility = View.GONE
-            PlayerFragment.newInstance(fakeTrack).switch()
+            HomeFragment().switch()
         }
-
         initGoogleSingInClient()
 //        val user = intent.getSerializableExtra(USER) as User
 //        textView2.text = user.uId

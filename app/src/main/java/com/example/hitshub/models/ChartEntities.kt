@@ -2,10 +2,11 @@ package com.example.hitshub.models
 
 import com.squareup.moshi.Json
 
+
 data class ChartTracksData(
     @Json(name = "data")
-    val data: List<ChartTrack>
-)
+    override val data: MutableList<ChartTrack>
+) : IRecyclerHorizontalModel
 
 data class ChartTrack(
     @Json(name = "id")
@@ -21,8 +22,8 @@ data class ChartTrack(
 
 data class AlbumChartData(
     @Json(name = "data")
-    val data: List<ChartAlbum>
-)
+    override val data: MutableList<ChartAlbum>
+) : IRecyclerHorizontalModel
 
 data class ChartAlbum(
     @Json(name = "id")
@@ -35,3 +36,4 @@ data class ChartAlbum(
     @Json(name = "tracklist")
     override val trackList_url: String
 ) : IAlbum
+
