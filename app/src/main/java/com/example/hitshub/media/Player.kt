@@ -16,16 +16,13 @@ class Player : MediaPlayer() {
         println(true)
         player.apply {
             reset()
-            intent.apply {
-                println(this.getStringExtra(URL_KEY))
-                setDataSource(this.getStringExtra(URL_KEY))
-                setOnCompletionListener {
-                    stop()
-                    reset()
-                }
-                isLooping = this.getBooleanExtra(IS_LOOPING_KEY, false)
-                prepare()
+            setDataSource(intent.getStringExtra(TRACK_URL))
+            setOnCompletionListener {
+                stop()
+                reset()
+                audioDuration.value = RESET
             }
+            prepare()
             withContext(Dispatchers.Main) {
                 audioDuration.value = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
             }
@@ -35,10 +32,15 @@ class Player : MediaPlayer() {
     companion object {
         const val PAUSE = "action.pause"
         const val PLAY = "action.play"
-        const val URL_KEY = "url_key"
-        const val IS_LOOPING_KEY = "is_looping_key"
-        private val player by lazy { Player() }
+        const val TRACK_URL = "url_key"
+        const val RESET = 0.toLong()
+        private var player: Player? = null
 
-        fun getInstance() = player
+        fun getInstance(): Player {
+            if (player == null) {
+                player = Player()
+            }
+            return player!!
+        }
     }
 }

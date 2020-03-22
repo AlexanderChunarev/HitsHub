@@ -4,10 +4,10 @@ import com.squareup.moshi.Json
 
 data class Track(
     @Json(name = "id")
-    val id: Long,
+    override val id: Long,
     @Json(name = "title")
-    val title: String,
+    override val title: String,
     @Json(name = "preview")
-    val preview: String,
-    val artist: Artist
+    override val preview: String,
+    override val artist: Artist
 ) : ITrack

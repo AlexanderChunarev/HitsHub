@@ -7,13 +7,14 @@ import com.example.hitshub.media.Player
 import com.example.hitshub.utils.NotificationHelper
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
+    private val player by lazy { Player.getInstance() }
     override fun onReceive(context: Context, intent: Intent?) {
         val notificationHelped by lazy { NotificationHelper.getInstance(context) }
         if (intent?.getStringExtra(RECEIVE_PAUSE_ACTION_KEY) == Player.PAUSE) {
-            Player.getInstance().pause()
+            player.pause()
             notificationHelped.updateNotification()
         } else if (intent?.getStringExtra(RECEIVE_PLAY_ACTION_KEY) == Player.PLAY) {
-            Player.getInstance().start()
+            player.start()
             notificationHelped.updateNotification()
         }
     }

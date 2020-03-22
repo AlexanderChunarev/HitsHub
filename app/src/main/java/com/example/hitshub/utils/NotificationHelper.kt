@@ -32,6 +32,7 @@ class NotificationHelper(private val context: Context) {
             pauseOrStartIntent.putExtra(RECEIVE_PLAY_ACTION_KEY, Player.PLAY)
         }
         pauseOrStartPendingIntent = createAction(pauseOrStartIntent)
+
         return NotificationCompat.Builder(context, App.CHANNEL_1_ID)
             .setSmallIcon(R.drawable.ic_play)
             .setContentTitle("track_title")
