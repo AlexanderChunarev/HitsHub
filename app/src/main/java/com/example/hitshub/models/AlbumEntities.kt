@@ -6,12 +6,12 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Album(
     @Json(name = "id")
-    val id: Long,
+    override val id: Long,
     @Json(name = "title")
-    val title: String,
+    override val title: String,
     @Json(name = "cover")
-    val cover_url: String,
-    val artist: Artist,
+    override val cover_url: String,
+    override val artist: Artist,
     @Json(name = "tracks")
     val albumTracks: AlbumTracks
 ) : IAlbum
