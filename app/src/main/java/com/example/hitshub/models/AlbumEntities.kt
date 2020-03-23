@@ -13,7 +13,8 @@ data class Album(
     override val cover_url: String,
     override val artist: Artist,
     @Json(name = "tracks")
-    val albumTracks: AlbumTracks
+    val albumTracks: AlbumTracks,
+    override val trackList_url: String
 ) : IAlbum
 
 data class AlbumTracks(
