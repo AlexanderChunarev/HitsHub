@@ -4,10 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
-import com.example.hitshub.fragments.LoadingStateFragment
-import com.example.hitshub.fragments.LoadingStateFragment.Companion.LOADING_FRAGMENT_TAG
+import com.example.hitshub.extentions.changeSpinnerDialogState
 import com.example.hitshub.models.User
 import com.example.hitshub.utils.MessageUtils
 import com.example.hitshub.viewmodels.BaseViewModel
@@ -19,7 +17,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         viewModel.showSpinner.observe(this, Observer {
-            changeSpinnerDialogState(it == true)
+            supportFragmentManager.changeSpinnerDialogState(it)
         })
 
         viewModel.message.observe(this, Observer {
@@ -47,14 +45,6 @@ abstract class BaseActivity : AppCompatActivity() {
             intent.putExtra(USER, user)
         }
         startActivity(intent)
-    }
-
-    private fun changeSpinnerDialogState(isShouldShow: Boolean) {
-        if (isShouldShow) {
-            LoadingStateFragment.newInstance().show(supportFragmentManager, LOADING_FRAGMENT_TAG)
-        } else {
-            (supportFragmentManager.findFragmentByTag(LOADING_FRAGMENT_TAG) as? DialogFragment)?.dismiss()
-        }
     }
 
     companion object {

@@ -15,7 +15,7 @@ import com.example.hitshub.models.VerticalModel
 
 class VerticalRVAdapter(
     private val context: Context,
-    val arrayList: MutableList<VerticalModel>,
+    private val arrayList: List<VerticalModel>,
     private val onItemListener: OnItemListener
 ) :
     Adapter<VerticalRVAdapter.VerticalRVViewHolder>() {

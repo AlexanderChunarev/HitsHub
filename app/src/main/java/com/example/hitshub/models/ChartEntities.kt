@@ -2,7 +2,6 @@ package com.example.hitshub.models
 
 import com.squareup.moshi.Json
 
-
 data class ChartTracksData(
     @Json(name = "data")
     override val data: MutableList<ChartTrack>
@@ -36,4 +35,3 @@ data class ChartAlbum(
     @Json(name = "tracklist")
     override val trackList_url: String
 ) : IAlbum
-

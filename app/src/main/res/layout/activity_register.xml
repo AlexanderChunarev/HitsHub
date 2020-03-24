@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dark_gray_gradiend"
+    android:background="@drawable/dark_gray_gradient"
     tools:context=".activities.RegisterActivity">
 
     <androidx.constraintlayout.widget.Guideline

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/routes"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.hitshub.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_playerFragment"
+            app:popUpToInclusive="true"
+            app:destination="@id/player_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/player_fragment"
+        android:name="com.example.hitshub.fragments.PlayerFragment"
+        android:label="fragment_player"
+        tools:layout="@layout/fragment_player" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.hitshub.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.example.hitshub.fragments.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+</navigation>

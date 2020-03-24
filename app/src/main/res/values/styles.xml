@@ -22,6 +22,11 @@
         <item name="android:windowBackground">@drawable/background_splash_screen</item>
     </style>
 
+    <style name="AppTheme.MainActivity" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/dark_gray_gradient</item>
+    </style>
+
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_right</item>
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>

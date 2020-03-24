@@ -2,53 +2,37 @@ package com.example.hitshub.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.hitshub.R
-import com.example.hitshub.fragments.HomeFragment
-import com.example.hitshub.fragments.ProfileFragment
-import com.example.hitshub.fragments.SearchFragment
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.hitshub.viewmodels.DeezerViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var googleSingInClient: GoogleSignInClient
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(DeezerViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            HomeFragment().switch()
+
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home, R.id.navigation_search, R.id.navigation_profile
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+        viewModel.apply {
+            getTopTracks()
+            getTopAlbums()
         }
-        initGoogleSingInClient()
-//        val user = intent.getSerializableExtra(USER) as User
-//        textView2.text = user.uId
-//        textView3.text = user.email
-
-        nav_view.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_home -> HomeFragment().switch()
-                R.id.navigation_profile -> ProfileFragment().switch()
-                R.id.navigation_search -> SearchFragment().switch()
-            }
-            return@setOnNavigationItemSelectedListener true
-        }
-    }
-
-    private fun initGoogleSingInClient() {
-        val googleOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-
-        googleSingInClient = GoogleSignIn.getClient(this, googleOptions)
-    }
-
-    private fun Fragment.switch() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, this)
-            .commit()
     }
 }
