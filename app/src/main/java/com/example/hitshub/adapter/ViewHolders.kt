@@ -18,7 +18,7 @@ class ChartTrackViewHolder(itemView: View) :
         val horizontalModel = (response as ChartTracksData).data[adapterPosition]
         horizontalModel.apply {
             textViewTitle.text = title
-            Picasso.get().load(this.artist.picture_url).into(imageViewThumb)
+            Picasso.get().load(this.artist.picture).into(imageViewThumb)
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
