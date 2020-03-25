@@ -3,45 +3,48 @@ package com.example.hitshub.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.hitshub.fragments.PlayerFragment
+import com.example.hitshub.fragments.MiniPlayerFragment
 import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.FAST_FORWARD
-import com.example.hitshub.media.Player.Companion.FAST_REWIND
-import com.example.hitshub.media.Player.Companion.PAUSE
-import com.example.hitshub.media.Player.Companion.PLAY
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
+import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
+import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
+import com.example.hitshub.services.MediaPlayerService
+import com.example.hitshub.services.MediaPlayerService.Companion.STOP_SERVICE
 import com.example.hitshub.utils.NotificationHelper
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
-    private val player by lazy { Player.getInstance() }
 
     override fun onReceive(context: Context, intent: Intent?) {
         val notificationHelper by lazy { NotificationHelper.getInstance(context) }
-        val playerStateIntent by lazy { Intent(PlayerFragment::class.java.toString()) }
+        val playerStateIntent by lazy { Intent(MiniPlayerFragment::class.java.toString()) }
+        val player by lazy { Player.getInstance() }
 
         when (intent!!.action) {
-            PAUSE -> {
+            ACTION_PAUSE -> {
                 player.pause()
                 notificationHelper.updateNotification(
-                    intent.getSerializableExtra(TRACK_INTENT) as ITrack,
-                    player
+                    intent.getSerializableExtra(TRACK_INTENT) as ITrack, player.isPlaying
                 )
-                playerStateIntent.putExtra(RECEIVE_PAUSE_ACTION_KEY, PAUSE)
+                playerStateIntent.putExtra(RECEIVE_PAUSE_ACTION_KEY, ACTION_PAUSE)
             }
-            PLAY -> {
+            ACTION_PLAY -> {
                 player.start()
                 notificationHelper.updateNotification(
-                    intent.getSerializableExtra(TRACK_INTENT) as ITrack,
-                    player
+                    intent.getSerializableExtra(TRACK_INTENT) as ITrack, player.isPlaying
                 )
-                playerStateIntent.putExtra(RECEIVE_PLAY_ACTION_KEY, PLAY)
+                playerStateIntent.putExtra(RECEIVE_PLAY_ACTION_KEY, ACTION_PLAY)
             }
-            FAST_FORWARD -> {
-                playerStateIntent.putExtra(RECEIVE_FAST_FORWARD_ACTION_KEY, FAST_FORWARD)
+            ACTION_FAST_FORWARD -> {
+                playerStateIntent.putExtra(RECEIVE_FAST_FORWARD_ACTION_KEY, ACTION_FAST_FORWARD)
             }
-            FAST_REWIND -> {
-                playerStateIntent.putExtra(RECEIVE_FAST_REWIND_ACTION_KEY, FAST_REWIND)
+            ACTION_FAST_REWIND -> {
+                playerStateIntent.putExtra(RECEIVE_FAST_REWIND_ACTION_KEY, ACTION_FAST_REWIND)
+            }
+            STOP_SERVICE -> {
+                context.stopService(Intent(context, MediaPlayerService::class.java))
             }
         }
         context.sendBroadcast(playerStateIntent)

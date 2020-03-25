@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.NavHostFragment
 import com.example.hitshub.R
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
@@ -22,10 +21,12 @@ class HomeFragment : BaseMediaFragment() {
     }
 
     override fun onClickItem(response: ITrack) {
-        val navController = NavHostFragment.findNavController(this)
-        navController.navigate(R.id.player_fragment, Bundle().apply {
-            putSerializable(PlayerFragment.RESPONSE_KEY, response)
-        })
+//        val navController = NavHostFragment.findNavController(this)
+//        navController.navigate(R.id.player_fragment, Bundle().apply {
+//            putSerializable(PlayerFragment.RESPONSE_KEY, response)
+//        })
+        activity!!.supportFragmentManager.beginTransaction()
+            .replace(R.id.mini_player_container, MiniPlayerFragment.newInstance(response)).commit()
     }
 
     override fun onClickItem(response: IAlbum) {}

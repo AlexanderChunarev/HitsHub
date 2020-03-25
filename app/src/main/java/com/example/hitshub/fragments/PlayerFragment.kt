@@ -15,14 +15,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
-import com.example.hitshub.extentions.changeSpinnerDialogState
 import com.example.hitshub.extentions.setBottomNavigationViewVisibility
 import com.example.hitshub.extentions.showSupportActionBar
 import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.FAST_FORWARD
-import com.example.hitshub.media.Player.Companion.FAST_REWIND
-import com.example.hitshub.media.Player.Companion.PAUSE
-import com.example.hitshub.media.Player.Companion.PLAY
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
+import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
+import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
@@ -34,6 +33,10 @@ import com.example.hitshub.utils.NotificationHelper
 import com.example.hitshub.viewmodels.DeezerViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_player.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
@@ -53,7 +56,8 @@ class PlayerFragment : Fragment() {
         if (arguments != null) {
             track = arguments!!.getSerializable(RESPONSE_KEY) as ITrack
         }
-        startMediaPlayerService()
+        serviceIntent.putExtra(TRACK_INTENT, track)
+        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
     }
 
     override fun onCreateView(
@@ -72,14 +76,8 @@ class PlayerFragment : Fragment() {
         viewModel.topTrackLiveData.observe(viewLifecycleOwner, Observer {
             tracks = it.data.toMutableList()
         })
-
-        player.showSpinner.observe(viewLifecycleOwner, Observer {
-            activity!!.supportFragmentManager.changeSpinnerDialogState(it)
-        })
-
         play_button_or_pause_button.setOnClickListener {
             setPlayerState()
-            notificationHelper.updateNotification(track, player)
         }
 
         fast_forward_button.setOnClickListener {
@@ -95,34 +93,52 @@ class PlayerFragment : Fragment() {
             FAST_FORWARD_SELECTOR -> {
                 (tracks.indexOf(track) + selector).run {
                     if (this < tracks.size) {
-                        stopService()
                         track = tracks[this]
-                        startMediaPlayerService()
-                        updateUi()
+                        resetPlayer()
                     }
                 }
             }
             FAST_REWIND_SELECTOR -> {
                 (tracks.indexOf(track) + selector).run {
                     if (this >= 0) {
-                        stopService()
                         track = tracks[this]
-                        startMediaPlayerService()
-                        updateUi()
+                        resetPlayer()
                     }
                 }
             }
         }
     }
 
-    private fun setPlayerState() {
-        if (player.isPlaying) {
-            player.pause()
-            play_button_or_pause_button.setImageResource(R.drawable.ic_play)
-        } else {
-            player.start()
-            play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+    private fun resetPlayer() = GlobalScope.launch {
+        withContext(Dispatchers.Main) {
+            player._prepareState.value = false
         }
+        player.apply {
+            prepareMediaPlayer(track.preview)
+        }
+        withContext(Dispatchers.Main) {
+            updateUi()
+        }
+        withContext(Dispatchers.Main) {
+            player._prepareState.value = true
+            notificationHelper.updateNotification(track, true)
+        }
+    }
+
+    private fun setPlayerState() {
+        player.prepareState.observe(viewLifecycleOwner, Observer {
+            if (it == true) {
+                if (player.isPlaying) {
+                    player.pause()
+                    play_button_or_pause_button.setImageResource(R.drawable.ic_play)
+                    notificationHelper.updateNotification(track, player.isPlaying)
+                } else {
+                    player.start()
+                    play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+                    notificationHelper.updateNotification(track, player.isPlaying)
+                }
+            }
+        })
     }
 
     private fun updateUi() {
@@ -177,27 +193,20 @@ class PlayerFragment : Fragment() {
     private fun receiver() = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when {
-                intent?.getStringExtra(RECEIVE_PAUSE_ACTION_KEY) == PAUSE -> {
-                    play_button_or_pause_button.setImageResource(R.drawable.ic_play)
+                intent?.getStringExtra(RECEIVE_PAUSE_ACTION_KEY) == ACTION_PAUSE -> {
+                    setPlayerState()
                 }
-                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PLAY_ACTION_KEY) == PLAY -> {
-                    play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PLAY_ACTION_KEY) == ACTION_PLAY -> {
+                    setPlayerState()
                 }
-                intent?.getStringExtra(RECEIVE_FAST_FORWARD_ACTION_KEY) == FAST_FORWARD -> {
+                intent?.getStringExtra(RECEIVE_FAST_FORWARD_ACTION_KEY) == ACTION_FAST_FORWARD -> {
                     selectTrack(FAST_FORWARD_SELECTOR)
                 }
-                intent?.getStringExtra(RECEIVE_FAST_REWIND_ACTION_KEY) == FAST_REWIND -> {
+                intent?.getStringExtra(RECEIVE_FAST_REWIND_ACTION_KEY) == ACTION_FAST_REWIND -> {
                     selectTrack(FAST_REWIND_SELECTOR)
                 }
             }
         }
-    }
-
-    private fun stopService() = activity!!.stopService(serviceIntent)
-
-    private fun startMediaPlayerService() {
-        serviceIntent.putExtra(TRACK_INTENT, track)
-        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
     }
 
     override fun onStop() {

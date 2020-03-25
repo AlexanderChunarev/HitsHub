@@ -5,25 +5,34 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 
 class Player : MediaPlayer() {
     private val audioDuration = MutableLiveData<Long>()
-    val _showSpinner = MutableLiveData<Boolean>()
-    val showSpinner: LiveData<Boolean> get() = _showSpinner
+    val _prepareState = MutableLiveData<Boolean>()
+    val prepareState: LiveData<Boolean> get() = _prepareState
 
     fun getTrackDuration() = audioDuration
 
     suspend fun prepareMediaPlayer(url: String) = withContext(Dispatchers.IO) {
         player.apply {
-            reset()
-            setDataSource(url)
+            try {
+                reset()
+                setDataSource(url)
+                prepare()
+            } catch (e: IllegalArgumentException) {
+            } catch (e: IllegalStateException) {
+            } catch (e: IOException) {
+            }
             setOnCompletionListener {
                 stop()
-                reset()
                 audioDuration.value = RESET
             }
-            prepare()
+            setOnPreparedListener {
+                start()
+            }
             withContext(Dispatchers.Main) {
                 audioDuration.value = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
             }
@@ -31,10 +40,10 @@ class Player : MediaPlayer() {
     }
 
     companion object {
-        const val PAUSE = "action.pause"
-        const val PLAY = "action.play"
-        const val FAST_FORWARD = "action.fastForward"
-        const val FAST_REWIND = "action.fastRewind"
+        const val ACTION_PAUSE = "action.pause"
+        const val ACTION_PLAY = "action.play"
+        const val ACTION_FAST_FORWARD = "action.fastForward"
+        const val ACTION_FAST_REWIND = "action.fastRewind"
         const val TRACK_INTENT = "track_key"
         const val RESET = 0.toLong()
         private var player: Player? = null

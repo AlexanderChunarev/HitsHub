@@ -24,7 +24,7 @@ class VerticalRVAdapter(
 
     inner class VerticalRVViewHolder(itemView: View) : ViewHolder(itemView) {
         val recyclerView: RecyclerView = itemView.findViewById(R.id.horizontal_recycler_view)
-        val title: TextView = itemView.findViewById(R.id.title)
+        val title: TextView = itemView.findViewById(R.id.mini_player_title)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalRVViewHolder {
