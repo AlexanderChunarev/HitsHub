@@ -24,21 +24,19 @@ class MediaPlayerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        val track = intent.getSerializableExtra(TRACK_INTENT) as ITrack
         GlobalScope.launch {
-            val track = intent.getSerializableExtra(TRACK_INTENT) as ITrack
             withContext(Dispatchers.Main) {
-                player._showSpinner.value = true
+                player._prepareState.value = false
             }
-            player.prepareMediaPlayer(track.preview)
-            withContext(Dispatchers.Main) {
-                player._showSpinner.value = false
-            }
-            player.start()
+            player.track = track
+            player.prepareMediaPlayer()
             withContext(Dispatchers.Main) {
                 startForeground(
                     NotificationHelper.NOTIFY_ID,
-                    notificationHelper.createNotification(track, player)
+                    notificationHelper.createNotification(track, player.isPlaying)
                 )
+                player._prepareState.value = true
             }
         }
         return START_STICKY
@@ -47,5 +45,10 @@ class MediaPlayerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         player.stop()
+        stopSelf()
+    }
+
+    companion object {
+        const val STOP_SERVICE = "stop_foreground_service"
     }
 }

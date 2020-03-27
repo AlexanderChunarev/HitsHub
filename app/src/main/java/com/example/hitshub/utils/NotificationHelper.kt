@@ -10,15 +10,17 @@ import android.graphics.BitmapFactory
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import com.example.hitshub.R
+import com.example.hitshub.activities.MainActivity
+import com.example.hitshub.activities.MainActivity.Companion.OPEN_PLAYER_FRAGMENT
 import com.example.hitshub.application.App
-import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.FAST_FORWARD
-import com.example.hitshub.media.Player.Companion.FAST_REWIND
-import com.example.hitshub.media.Player.Companion.PAUSE
-import com.example.hitshub.media.Player.Companion.PLAY
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
+import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
+import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
+import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
+import com.example.hitshub.services.MediaPlayerService.Companion.STOP_SERVICE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,60 +30,78 @@ import java.net.URL
 class NotificationHelper(private val context: Context) {
     private val mediaSession = MediaSessionCompat(context, "tag")
 
-    suspend fun createNotification(track: ITrack, player: Player): Notification =
-        withContext(Dispatchers.Main) {
-            val pauseOrStartIntent = Intent(context, NotificationBroadcastReceiver::class.java)
-            val fastRewindIntent = Intent(context, NotificationBroadcastReceiver::class.java)
-            val fastForwardIntent = Intent(context, NotificationBroadcastReceiver::class.java)
-            val isPlayOrPause: Int
+    suspend fun createNotification(track: ITrack, isPlaying: Boolean): Notification {
+        val pauseOrStartIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+        val fastRewindIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+        val fastForwardIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+        val closeIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+        val resultIntent = Intent(context, MainActivity::class.java)
 
-            if (player.isPlaying) {
-                isPlayOrPause = R.drawable.ic_pause
-                pauseOrStartIntent.action = PAUSE
-            } else {
-                isPlayOrPause = R.drawable.ic_play
-                pauseOrStartIntent.action = PLAY
-            }
-            pauseOrStartIntent.putExtra(TRACK_INTENT, track)
-            fastForwardIntent.action = FAST_FORWARD
-            fastRewindIntent.action = FAST_REWIND
+        val drawable: Int
 
-            NotificationCompat.Builder(context, App.CHANNEL_1_ID)
-                .setSmallIcon(R.drawable.ic_play)
-                .setContentTitle(track.title)
-                .setContentText(track.artist!!.name)
-                .setLargeIcon(getIconBitmap(track))
-                .addAction(
-                    R.drawable.ic_fast_rewind,
-                    "Rewind",
-                    createAction(fastRewindIntent, REWIND_REQUEST_CODE)
-                )
-                .addAction(
-                    isPlayOrPause,
-                    "Previous",
-                    createAction(pauseOrStartIntent, PLAY_PAUSE_REQUEST_CODE)
-                )
-                .addAction(
-                    R.drawable.ic_fast_forward,
-                    "Forward",
-                    createAction(fastForwardIntent, FORWARD_REQUEST_CODE)
-                )
-                .setStyle(
-                    androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(
-                        1, 2
-                    ).setMediaSession(mediaSession.sessionToken)
-                )
-                .setSubText("Sub Text")
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
+        if (isPlaying) {
+            drawable = R.drawable.ic_pause
+            pauseOrStartIntent.action = ACTION_PAUSE
+        } else {
+            drawable = R.drawable.ic_play
+            pauseOrStartIntent.action = ACTION_PLAY
         }
+        pauseOrStartIntent.putExtra(TRACK_INTENT, track)
+        fastForwardIntent.action = ACTION_FAST_FORWARD
+        fastRewindIntent.action = ACTION_FAST_REWIND
+        closeIntent.action = STOP_SERVICE
+        resultIntent.action = OPEN_PLAYER_FRAGMENT
+        return NotificationCompat.Builder(context, App.CHANNEL_1_ID)
+            .setAutoCancel(true)
+            .setOngoing(true)
+            .setSmallIcon(R.drawable.headphones_logo)
+            .setContentTitle(track.title)
+            .setContentText(track.artist!!.name)
+            .setLargeIcon(getIconBitmap(track))
+            .addAction(
+                R.drawable.ic_fast_rewind,
+                null,
+                createPendingIntent(fastRewindIntent, REWIND_REQUEST_CODE)
+            )
+            .addAction(
+                drawable,
+                null,
+                createPendingIntent(pauseOrStartIntent, PLAY_PAUSE_REQUEST_CODE)
+            )
+            .addAction(
+                R.drawable.ic_fast_forward,
+                null,
+                createPendingIntent(fastForwardIntent, FORWARD_REQUEST_CODE)
+            )
+            .addAction(
+                R.drawable.ic_close,
+                null,
+                createPendingIntent(closeIntent, CLOSE_REQUEST_CODE)
+            )
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(
+                    1, 2, 3
+                ).setMediaSession(mediaSession.sessionToken)
+            )
+            .setOngoing(true)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    ACTIVITY_REQUEST_CODE,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+    }
 
     private suspend fun getIconBitmap(track: ITrack): Bitmap = withContext(Dispatchers.IO) {
         BitmapFactory.decodeStream(URL(track.artist!!.picture).openConnection().getInputStream())
     }
 
-    private fun createAction(intent: Intent, requestCode: Int): PendingIntent {
+    private fun createPendingIntent(intent: Intent, requestCode: Int): PendingIntent {
         return PendingIntent.getBroadcast(
             context,
             requestCode,
@@ -90,10 +110,10 @@ class NotificationHelper(private val context: Context) {
         )
     }
 
-    fun updateNotification(track: ITrack, player: Player) = GlobalScope.launch {
+    fun updateNotification(track: ITrack, isPlay: Boolean) = GlobalScope.launch {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFY_ID, createNotification(track, player))
+        notificationManager.notify(NOTIFY_ID, createNotification(track, isPlay))
     }
 
     companion object {
@@ -101,6 +121,8 @@ class NotificationHelper(private val context: Context) {
         const val PLAY_PAUSE_REQUEST_CODE = 100
         const val FORWARD_REQUEST_CODE = 101
         const val REWIND_REQUEST_CODE = 102
+        const val CLOSE_REQUEST_CODE = 400
+        const val ACTIVITY_REQUEST_CODE = 1
 
         private var notificationHelped: NotificationHelper? = null
 

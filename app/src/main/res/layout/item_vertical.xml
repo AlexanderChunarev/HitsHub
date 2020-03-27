@@ -8,7 +8,7 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/mini_player_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -29,7 +29,7 @@
         android:foregroundGravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/mini_player_title"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,7 +29,7 @@
         app:layout_constraintGuide_percent="1" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/artist_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -55,7 +55,7 @@
         app:layout_constraintBottom_toTopOf="@+id/logo_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/artist_image"
         app:layout_constraintVertical_weight="1" />
 
 

@@ -3,38 +3,49 @@ package com.example.hitshub.media
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.hitshub.extentions.next
+import com.example.hitshub.models.ITrack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
+import java.io.IOException
 
 class Player : MediaPlayer() {
-    private val audioDuration = MutableLiveData<Long>()
-    val _showSpinner = MutableLiveData<Boolean>()
-    val showSpinner: LiveData<Boolean> get() = _showSpinner
+    lateinit var track: ITrack
+    lateinit var playlist: MutableList<ITrack>
+    val _prepareState = MutableLiveData<Boolean>()
+    val prepareState: LiveData<Boolean> get() = _prepareState
 
-    fun getTrackDuration() = audioDuration
-
-    suspend fun prepareMediaPlayer(url: String) = withContext(Dispatchers.IO) {
+    suspend fun prepareMediaPlayer() = withContext(Dispatchers.IO) {
         player.apply {
-            reset()
-            setDataSource(url)
-            setOnCompletionListener {
+            if (isPlaying) {
                 stop()
                 reset()
-                audioDuration.value = RESET
             }
-            prepare()
-            withContext(Dispatchers.Main) {
-                audioDuration.value = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
+            try {
+                setDataSource(track.preview)
+                prepare()
+                start()
+            } catch (e: IllegalArgumentException) {
+            } catch (e: IllegalStateException) {
+            } catch (e: IOException) {
+            }
+            isLooping = true
+        }
+    }
+
+    fun next(selector: Int) {
+        player!!.playlist.next(selector, track).run {
+            if (this != null) {
+                track = this
             }
         }
     }
 
     companion object {
-        const val PAUSE = "action.pause"
-        const val PLAY = "action.play"
-        const val FAST_FORWARD = "action.fastForward"
-        const val FAST_REWIND = "action.fastRewind"
+        const val ACTION_PAUSE = "action.pause"
+        const val ACTION_PLAY = "action.play"
+        const val ACTION_FAST_FORWARD = "action.fastForward"
+        const val ACTION_FAST_REWIND = "action.fastRewind"
         const val TRACK_INTENT = "track_key"
         const val RESET = 0.toLong()
         private var player: Player? = null

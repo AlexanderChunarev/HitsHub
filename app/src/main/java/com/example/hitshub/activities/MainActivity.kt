@@ -35,4 +35,8 @@ class MainActivity : AppCompatActivity() {
             getTopAlbums()
         }
     }
+
+    companion object {
+        const val OPEN_PLAYER_FRAGMENT = "open_player_from_notification"
+    }
 }
