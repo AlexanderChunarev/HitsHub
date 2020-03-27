@@ -27,6 +27,7 @@ abstract class BaseMediaFragment : Fragment(), OnItemListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        retainInstance = true
         parent_recycler_view.apply {
             layoutManager =
                 LinearLayoutManager(

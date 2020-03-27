@@ -11,9 +11,14 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_playerFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/player_fragment" />
+            android:id="@+id/action_navigation_home_to_player_fragment"
+            app:destination="@id/player_fragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/player_fragment"

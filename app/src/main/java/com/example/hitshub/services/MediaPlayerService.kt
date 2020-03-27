@@ -29,7 +29,8 @@ class MediaPlayerService : Service() {
             withContext(Dispatchers.Main) {
                 player._prepareState.value = false
             }
-            player.prepareMediaPlayer(track.preview)
+            player.track = track
+            player.prepareMediaPlayer()
             withContext(Dispatchers.Main) {
                 startForeground(
                     NotificationHelper.NOTIFY_ID,
@@ -44,6 +45,7 @@ class MediaPlayerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         player.stop()
+        stopSelf()
     }
 
     companion object {

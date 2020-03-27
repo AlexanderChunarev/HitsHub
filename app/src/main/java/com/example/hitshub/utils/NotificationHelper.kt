@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import com.example.hitshub.R
+import com.example.hitshub.activities.MainActivity
+import com.example.hitshub.activities.MainActivity.Companion.OPEN_PLAYER_FRAGMENT
 import com.example.hitshub.application.App
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
@@ -33,6 +35,8 @@ class NotificationHelper(private val context: Context) {
         val fastRewindIntent = Intent(context, NotificationBroadcastReceiver::class.java)
         val fastForwardIntent = Intent(context, NotificationBroadcastReceiver::class.java)
         val closeIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+        val resultIntent = Intent(context, MainActivity::class.java)
+
         val drawable: Int
 
         if (isPlaying) {
@@ -46,6 +50,7 @@ class NotificationHelper(private val context: Context) {
         fastForwardIntent.action = ACTION_FAST_FORWARD
         fastRewindIntent.action = ACTION_FAST_REWIND
         closeIntent.action = STOP_SERVICE
+        resultIntent.action = OPEN_PLAYER_FRAGMENT
         return NotificationCompat.Builder(context, App.CHANNEL_1_ID)
             .setAutoCancel(true)
             .setOngoing(true)
@@ -56,22 +61,22 @@ class NotificationHelper(private val context: Context) {
             .addAction(
                 R.drawable.ic_fast_rewind,
                 null,
-                createAction(fastRewindIntent, REWIND_REQUEST_CODE)
+                createPendingIntent(fastRewindIntent, REWIND_REQUEST_CODE)
             )
             .addAction(
                 drawable,
                 null,
-                createAction(pauseOrStartIntent, PLAY_PAUSE_REQUEST_CODE)
+                createPendingIntent(pauseOrStartIntent, PLAY_PAUSE_REQUEST_CODE)
             )
             .addAction(
                 R.drawable.ic_fast_forward,
                 null,
-                createAction(fastForwardIntent, FORWARD_REQUEST_CODE)
+                createPendingIntent(fastForwardIntent, FORWARD_REQUEST_CODE)
             )
             .addAction(
                 R.drawable.ic_close,
                 null,
-                createAction(closeIntent, CLOSE_REQUEST_CODE)
+                createPendingIntent(closeIntent, CLOSE_REQUEST_CODE)
             )
             .setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(
@@ -79,7 +84,16 @@ class NotificationHelper(private val context: Context) {
                 ).setMediaSession(mediaSession.sessionToken)
             )
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    ACTIVITY_REQUEST_CODE,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
     }
 
@@ -87,7 +101,7 @@ class NotificationHelper(private val context: Context) {
         BitmapFactory.decodeStream(URL(track.artist!!.picture).openConnection().getInputStream())
     }
 
-    private fun createAction(intent: Intent, requestCode: Int): PendingIntent {
+    private fun createPendingIntent(intent: Intent, requestCode: Int): PendingIntent {
         return PendingIntent.getBroadcast(
             context,
             requestCode,
@@ -108,6 +122,7 @@ class NotificationHelper(private val context: Context) {
         const val FORWARD_REQUEST_CODE = 101
         const val REWIND_REQUEST_CODE = 102
         const val CLOSE_REQUEST_CODE = 400
+        const val ACTIVITY_REQUEST_CODE = 1
 
         private var notificationHelped: NotificationHelper? = null
 

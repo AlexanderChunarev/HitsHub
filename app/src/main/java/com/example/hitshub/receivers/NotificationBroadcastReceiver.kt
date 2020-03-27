@@ -3,7 +3,7 @@ package com.example.hitshub.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.hitshub.fragments.MiniPlayerFragment
+import com.example.hitshub.fragments.PlayerFragment
 import com.example.hitshub.media.Player
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
@@ -16,11 +16,11 @@ import com.example.hitshub.services.MediaPlayerService.Companion.STOP_SERVICE
 import com.example.hitshub.utils.NotificationHelper
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
+    private val player by lazy { Player.getInstance() }
 
     override fun onReceive(context: Context, intent: Intent?) {
         val notificationHelper by lazy { NotificationHelper.getInstance(context) }
-        val playerStateIntent by lazy { Intent(MiniPlayerFragment::class.java.toString()) }
-        val player by lazy { Player.getInstance() }
+        val playerStateIntent by lazy { Intent(PlayerFragment::class.java.toString()) }
 
         when (intent!!.action) {
             ACTION_PAUSE -> {

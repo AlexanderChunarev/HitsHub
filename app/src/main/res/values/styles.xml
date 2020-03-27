@@ -30,7 +30,7 @@
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_right</item>
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
-        <item name="android:activityCloseEnterAnimation">@anim/slide_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_left_fragment</item>
         <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
     </style>
 

@@ -22,12 +22,8 @@ import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
-import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_FAST_FORWARD_ACTION_KEY
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_FAST_REWIND_ACTION_KEY
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
 import com.example.hitshub.services.MediaPlayerService
 import com.example.hitshub.utils.NotificationHelper
 import com.example.hitshub.viewmodels.DeezerViewModel
@@ -40,24 +36,22 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
-    private lateinit var track: ITrack
-    private lateinit var tracks: MutableList<ITrack>
-    private val notificationHelper by lazy { NotificationHelper.getInstance(activity!!.applicationContext) }
-    private val player by lazy { Player.getInstance() }
+    val player by lazy { Player.getInstance() }
     private val handler by lazy { Handler() }
     private lateinit var runnable: Runnable
     private val viewModel by lazy {
         ViewModelProvider(activity!!).get(DeezerViewModel::class.java)
+    }
+    private val notificationHelper by lazy {
+        NotificationHelper.getInstance(activity!!.applicationContext)
     }
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            track = arguments!!.getSerializable(RESPONSE_KEY) as ITrack
+            player.track = arguments!!.getSerializable(TRANSFER_KEY) as ITrack
         }
-        serviceIntent.putExtra(TRACK_INTENT, track)
-        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
     }
 
     override fun onCreateView(
@@ -65,87 +59,64 @@ class PlayerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.fragment_player, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateUi()
         initializeSeekBar()
+        updateUI()
 
         viewModel.topTrackLiveData.observe(viewLifecycleOwner, Observer {
-            tracks = it.data.toMutableList()
+            player.playlist = it.data.toMutableList()
         })
-        play_button_or_pause_button.setOnClickListener {
-            setPlayerState()
-        }
-
-        fast_forward_button.setOnClickListener {
-            selectTrack(FAST_FORWARD_SELECTOR)
-        }
-        fast_rewind_button.setOnClickListener {
-            selectTrack(FAST_REWIND_SELECTOR)
-        }
-    }
-
-    private fun selectTrack(selector: Int) {
-        when (selector) {
-            FAST_FORWARD_SELECTOR -> {
-                (tracks.indexOf(track) + selector).run {
-                    if (this < tracks.size) {
-                        track = tracks[this]
-                        resetPlayer()
-                    }
-                }
-            }
-            FAST_REWIND_SELECTOR -> {
-                (tracks.indexOf(track) + selector).run {
-                    if (this >= 0) {
-                        track = tracks[this]
-                        resetPlayer()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun resetPlayer() = GlobalScope.launch {
-        withContext(Dispatchers.Main) {
-            player._prepareState.value = false
-        }
-        player.apply {
-            prepareMediaPlayer(track.preview)
-        }
-        withContext(Dispatchers.Main) {
-            updateUi()
-        }
-        withContext(Dispatchers.Main) {
-            player._prepareState.value = true
-            notificationHelper.updateNotification(track, true)
-        }
-    }
-
-    private fun setPlayerState() {
         player.prepareState.observe(viewLifecycleOwner, Observer {
             if (it == true) {
-                if (player.isPlaying) {
-                    player.pause()
-                    play_button_or_pause_button.setImageResource(R.drawable.ic_play)
-                    notificationHelper.updateNotification(track, player.isPlaying)
-                } else {
-                    player.start()
-                    play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
-                    notificationHelper.updateNotification(track, player.isPlaying)
-                }
+                player.start()
+                updateUI()
             }
         })
+        play_button_or_pause_button.setOnClickListener {
+            setPlayerStateOnNotificationAction()
+        }
+        fast_forward_button.setOnClickListener {
+            player.next(FAST_FORWARD_SELECTOR)
+            startForegroundService()
+        }
+        fast_rewind_button.setOnClickListener {
+            player.next(FAST_REWIND_SELECTOR)
+            startForegroundService()
+        }
     }
 
-    private fun updateUi() {
-        track_title_text_view.text = track.title
-        track_author_text_view.text = track.artist!!.name
-        Picasso.get().load(track.artist!!.pictureBig).into(cover_big_image_view)
-        play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+    private fun updateUI() {
+        player.isPlaying.run {
+            when (this) {
+                true -> {
+                    play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+                }
+                else -> {
+                    play_button_or_pause_button.setImageResource(R.drawable.ic_play)
+                }
+            }
+            player.track.apply {
+                track_title_text_view.text = this.title
+                track_author_text_view.text = this.artist!!.name
+                Picasso.get().load(this.artist!!.pictureBig).into(cover_big_image_view)
+                play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+                notificationHelper.updateNotification(this, this@run)
+            }
+        }
+    }
+
+    fun updateControlButtons(action: String) {
+        if (view != null) {
+            when (action) {
+                ACTION_PAUSE -> play_button_or_pause_button.setImageResource(R.drawable.ic_play)
+                ACTION_PLAY -> play_button_or_pause_button.setImageResource(R.drawable.ic_pause)
+            }
+        }
     }
 
     private fun handleSeekBarPosition() {
@@ -161,8 +132,10 @@ class PlayerFragment : Fragment() {
     }
 
     private fun initializeSeekBar() {
-        player.getTrackDuration().observe(viewLifecycleOwner, Observer {
-            seekBar.max = it.toInt()
+        player.prepareState.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                seekBar.max = TimeUnit.MILLISECONDS.toSeconds(player.duration.toLong()).toInt()
+            }
         })
         handleSeekBarPosition()
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -178,34 +151,75 @@ class PlayerFragment : Fragment() {
         })
     }
 
-    override fun onResume() {
-        super.onResume()
-        activity!!.apply {
-            showSupportActionBar(View.GONE)
-            setBottomNavigationViewVisibility(View.GONE)
-            applicationContext.registerReceiver(
-                receiver(),
-                IntentFilter(PlayerFragment::class.java.toString())
-            )
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+            when {
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PAUSE_ACTION_KEY) == ACTION_PAUSE -> {
+                    updateControlButtons(ACTION_PAUSE)
+                }
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PLAY_ACTION_KEY) == ACTION_PLAY -> {
+                    updateControlButtons(ACTION_PLAY)
+                }
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_FAST_FORWARD_ACTION_KEY) == ACTION_FAST_FORWARD -> {
+                    player.next(FAST_FORWARD_SELECTOR)
+                    startForegroundService()
+                }
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_FAST_REWIND_ACTION_KEY) == ACTION_FAST_REWIND -> {
+                    player.next(FAST_REWIND_SELECTOR)
+                    startForegroundService()
+                }
+            }
         }
     }
 
-    private fun receiver() = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when {
-                intent?.getStringExtra(RECEIVE_PAUSE_ACTION_KEY) == ACTION_PAUSE -> {
-                    setPlayerState()
-                }
-                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PLAY_ACTION_KEY) == ACTION_PLAY -> {
-                    setPlayerState()
-                }
-                intent?.getStringExtra(RECEIVE_FAST_FORWARD_ACTION_KEY) == ACTION_FAST_FORWARD -> {
-                    selectTrack(FAST_FORWARD_SELECTOR)
-                }
-                intent?.getStringExtra(RECEIVE_FAST_REWIND_ACTION_KEY) == ACTION_FAST_REWIND -> {
-                    selectTrack(FAST_REWIND_SELECTOR)
+    private fun setPlayerStateOnNotificationAction() {
+        player.prepareState.observe(viewLifecycleOwner, Observer {
+            if (it == true) {
+                player.apply {
+                    if (this.isPlaying) {
+                        updateControlButtons(ACTION_PAUSE)
+                        pause()
+                    } else {
+                        start()
+                        updateControlButtons(ACTION_PLAY)
+                    }
+                    notificationHelper.updateNotification(track, isPlaying)
                 }
             }
+        })
+    }
+
+    private fun startForegroundService() = GlobalScope.launch {
+        if (view != null) {
+            withContext(Dispatchers.Main) {
+                player._prepareState.value = false
+            }
+            withContext(Dispatchers.IO) {
+                serviceIntent.putExtra(Player.TRACK_INTENT, player.track)
+                ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+            }
+            withContext(Dispatchers.Main) {
+                player._prepareState.value = true
+                updateUI()
+            }
+        } else {
+            player.apply {
+                prepareMediaPlayer()
+                notificationHelper.updateNotification(track, isPlaying)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity!!.apply {
+            applicationContext.registerReceiver(
+                receiver,
+                IntentFilter(PlayerFragment::class.java.toString())
+            )
+            showSupportActionBar(View.GONE)
+            setBottomNavigationViewVisibility(View.GONE)
         }
     }
 
@@ -218,9 +232,9 @@ class PlayerFragment : Fragment() {
     }
 
     companion object {
+        const val TRANSFER_KEY = "curr_track"
         const val FAST_FORWARD_SELECTOR = 1
         const val FAST_REWIND_SELECTOR = -1
-        const val RESPONSE_KEY = "response_key"
         const val DELAY = 1000.toLong()
     }
 }
