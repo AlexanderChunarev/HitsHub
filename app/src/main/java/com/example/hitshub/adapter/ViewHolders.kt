@@ -1,6 +1,10 @@
 package com.example.hitshub.adapter
 
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.hitshub.R
 import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.models.*
 import com.squareup.picasso.Picasso
@@ -19,7 +23,7 @@ class TrackViewHolder(itemView: View) :
 
         horizontalModel!!.apply {
             textViewTitle.text = title
-            Picasso.get().load(this.artist.picture).into(imageViewThumb)
+            Picasso.get().load(this.artist!!.picture).into(imageViewThumb)
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
@@ -44,6 +48,24 @@ class AlbumViewHolder(itemView: View) :
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
+        }
+    }
+}
+
+class PlaylistViewHolder(itemView: View) :
+    ViewHolder(itemView) {
+    private val titleText: TextView = itemView.findViewById(R.id.title_textView)
+    private val artistText: TextView = itemView.findViewById(R.id.artist_textView)
+    private val coverImage: ImageView = itemView.findViewById(R.id.cover_image)
+
+    fun bind(playlist: MutableList<ITrack>, clickListener: OnItemListener) {
+        playlist[adapterPosition].apply {
+            titleText.text = title
+            artistText.text = artist!!.name
+            Picasso.get().load(artist!!.picture).into(coverImage)
+            itemView.setOnClickListener {
+                clickListener.onClickItem(this)
+            }
         }
     }
 }

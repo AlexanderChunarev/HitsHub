@@ -8,7 +8,7 @@ import org.junit.Test
 
 class TestApi {
 
-    val deezerRepository by lazy { DeezerRepository() }
+    private val deezerRepository by lazy { DeezerRepository() }
 
     @Test
     fun testFetchAlbumByName() {

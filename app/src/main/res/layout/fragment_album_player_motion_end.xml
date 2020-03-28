@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/play_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:src="@drawable/ic_play_circle"
@@ -45,31 +45,30 @@
         app:layout_constraintGuide_percent="0.45"/>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/description_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:visibility="gone"
         android:layout_marginStart="16dp"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_info"
+        android:text="TextView"
+        android:fontFamily="sans-serif-condensed-light"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_image" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/like_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_favorite"
-        app:layout_constraintHorizontal_bias="1"
         android:layout_marginEnd="16dp"
-        android:visibility="gone"
         android:background="@android:color/transparent"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_info"
+        android:src="@drawable/ic_favorite"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_image" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/parent_recycler_view"

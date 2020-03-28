@@ -17,11 +17,8 @@ class Player : MediaPlayer() {
 
     suspend fun prepareMediaPlayer() = withContext(Dispatchers.IO) {
         player.apply {
-            if (isPlaying) {
-                stop()
-                reset()
-            }
             try {
+                reset()
                 setDataSource(track.preview)
                 prepare()
                 start()
@@ -29,7 +26,6 @@ class Player : MediaPlayer() {
             } catch (e: IllegalStateException) {
             } catch (e: IOException) {
             }
-            isLooping = true
         }
     }
 

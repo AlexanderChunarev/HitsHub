@@ -3,7 +3,7 @@ package com.example.hitshub.fragments
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -21,8 +21,8 @@ class SearchFragment : BaseMediaFragment() {
             arrayListVertical, this
         )
     }
-    val viewModel: DeezerViewModel by activityViewModels()
-    override val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
+    private val viewModel: DeezerViewModel by activityViewModels()
+    private val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,12 +81,16 @@ class SearchFragment : BaseMediaFragment() {
 
     override fun onClickItem(response: ITrack) {
         serviceIntent.putExtra(Player.TRACK_INTENT, response)
-        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+        startForegroundService(activity!!.applicationContext, serviceIntent)
         navController.navigate(R.id.player_fragment, Bundle().apply {
             putSerializable(PlayerFragment.TRANSFER_KEY, response)
         })
     }
 
     override fun onClickItem(response: IAlbum) {
+        viewModel.getAlbumById(response.id)
+        navController.navigate(R.id.albumPlayerFragment, Bundle().apply {
+            putSerializable(PlayerFragment.TRANSFER_KEY, response)
+        })
     }
 }

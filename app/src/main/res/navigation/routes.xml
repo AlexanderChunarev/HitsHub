@@ -33,5 +33,9 @@
         android:id="@+id/albumPlayerFragment"
         android:name="com.example.hitshub.fragments.AlbumPlayerFragment"
         android:label="fragment_album_player_motion_end"
-        tools:layout="@layout/fragment_album_player" />
+        tools:layout="@layout/fragment_album_player" >
+        <action
+            android:id="@+id/action_albumPlayerFragment_to_player_fragment"
+            app:destination="@id/player_fragment" />
+    </fragment>
 </navigation>

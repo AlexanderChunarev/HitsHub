@@ -13,7 +13,7 @@ class DeezerViewModel : ViewModel() {
     val topTrackLiveData by lazy { MutableLiveData<ChartTracksData>() }
     val topAlbumLiveData by lazy { MutableLiveData<ChartAlbumData>() }
     val getTrackByName by lazy { MutableLiveData<TrackData>() }
-    val getAlbymById by lazy { MutableLiveData<AlbumById>() }
+    val getAlbumById by lazy { MutableLiveData<AlbumById>() }
     val getAlbumByName by lazy { MutableLiveData<SearchAlbumData>() }
     val getTrackById by lazy { MutableLiveData<Track>() }
     val deezerRepo by lazy { DeezerRepository() }
@@ -40,7 +40,10 @@ class DeezerViewModel : ViewModel() {
     }
 
     fun getAlbumById(id: Long) = GlobalScope.launch {
-        getAlbymById.value = deezerRepo.fetchAlbumDataById(id)
+        val response = deezerRepo.fetchAlbumDataById(id)
+        withContext(Dispatchers.Main) {
+            getAlbumById.value = response
+        }
     }
 
     fun getAlbumByName(name: String) = GlobalScope.launch {

@@ -18,9 +18,9 @@ class VerticalRVAdapter(
     private val arrayList: List<VerticalModel>,
     private val onItemListener: OnItemListener
 ) :
-    Adapter<VerticalRVAdapter.VerticalRVViewHolder>() {
+    Adapter<ViewHolder>() {
     private val list = mutableListOf<HorizontalRVAdapter>()
-    lateinit var horizontalRVAdapter: HorizontalRVAdapter
+    private lateinit var horizontalRVAdapter: HorizontalRVAdapter
 
     inner class VerticalRVViewHolder(itemView: View) : ViewHolder(itemView) {
         val recyclerView: RecyclerView = itemView.findViewById(R.id.horizontal_recycler_view)
@@ -37,9 +37,10 @@ class VerticalRVAdapter(
         return arrayList.size
     }
 
-    override fun onBindViewHolder(holder: VerticalRVViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val verticalModel = arrayList[position]
         horizontalRVAdapter = HorizontalRVAdapter(verticalModel.item, onItemListener)
+        holder as VerticalRVViewHolder
         list.add(horizontalRVAdapter)
         holder.apply {
             title.text = verticalModel.title

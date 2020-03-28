@@ -98,6 +98,7 @@ class NotificationHelper(private val context: Context) {
     }
 
     private suspend fun getIconBitmap(track: ITrack): Bitmap = withContext(Dispatchers.IO) {
+        println(track.artist.toString() + "lksdjflksdjflksdjfkjsd")
         BitmapFactory.decodeStream(URL(track.artist!!.picture).openConnection().getInputStream())
     }
 

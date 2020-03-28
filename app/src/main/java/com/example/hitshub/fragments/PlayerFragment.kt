@@ -34,18 +34,21 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
-    val player by lazy { Player.getInstance() }
+    private val player by lazy { Player.getInstance() }
     private val handler by lazy { Handler() }
     private lateinit var runnable: Runnable
     private val notificationHelper by lazy {
         NotificationHelper.getInstance(activity!!.applicationContext)
     }
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
+    private lateinit var track: ITrack
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            player.track = arguments!!.getSerializable(TRANSFER_KEY) as ITrack
+            arguments!!.apply {
+                player.track = getSerializable(TRANSFER_KEY) as ITrack
+            }
         }
     }
 
@@ -63,9 +66,13 @@ class PlayerFragment : Fragment() {
         initializeSeekBar()
         updateUI()
 
+        player.setOnCompletionListener {
+            player.next(FAST_FORWARD_SELECTOR)
+            startForegroundService()
+        }
+
         player.prepareState.observe(viewLifecycleOwner, Observer {
             if (it == true) {
-                player.start()
                 updateUI()
             }
         })

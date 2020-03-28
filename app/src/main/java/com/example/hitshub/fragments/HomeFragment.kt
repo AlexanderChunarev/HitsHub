@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -24,7 +24,7 @@ class HomeFragment : BaseMediaFragment() {
         )
     }
     private val viewModel: DeezerViewModel by activityViewModels()
-    override val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
+    private val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,13 +53,16 @@ class HomeFragment : BaseMediaFragment() {
 
     override fun onClickItem(response: ITrack) {
         serviceIntent.putExtra(Player.TRACK_INTENT, response)
-        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+        startForegroundService(activity!!.applicationContext, serviceIntent)
         navController.navigate(R.id.player_fragment, Bundle().apply {
             putSerializable(TRANSFER_KEY, response)
         })
     }
 
     override fun onClickItem(response: IAlbum) {
-        navController.navigate(R.id.albumPlayerFragment)
+        viewModel.getAlbumById(response.id)
+        navController.navigate(R.id.albumPlayerFragment, Bundle().apply {
+            putSerializable(TRANSFER_KEY, response)
+        })
     }
 }

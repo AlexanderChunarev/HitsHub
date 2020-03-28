@@ -24,7 +24,6 @@
 
     <style name="AppTheme.MainActivity" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@drawable/dark_gray_gradient</item>
     </style>
 
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
