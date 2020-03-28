@@ -30,6 +30,12 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        intent.action.apply {
+            if (this == OPEN_PLAYER_FRAGMENT) {
+                navController.navigate(R.id.player_fragment)
+            }
+        }
+
         viewModel.apply {
             getTopTracks()
             getTopAlbums()

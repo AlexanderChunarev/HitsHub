@@ -4,10 +4,10 @@ import com.squareup.moshi.Json
 
 data class TrackData(
     @Json(name = "data")
-    val data: List<Track>
-)
+    override val data: MutableList<Track>
+) : IRecyclerHorizontalModel
 
-data class AlbumData(
+data class SearchAlbumData(
     @Json(name = "data")
-    val data: List<ChartAlbum>
-)
+    override val data: MutableList<Album>
+) : IRecyclerHorizontalModel

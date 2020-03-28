@@ -1,22 +1,23 @@
 package com.example.hitshub.adapter
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import com.example.hitshub.R
 import com.example.hitshub.listener.OnItemListener
-import com.example.hitshub.models.AlbumChartData
-import com.example.hitshub.models.ChartTracksData
+import com.example.hitshub.models.*
 import com.squareup.picasso.Picasso
 
-class ChartTrackViewHolder(itemView: View) :
+class TrackViewHolder(itemView: View) :
     BaseViewHolder(itemView) {
-    var textViewTitle: TextView = itemView.findViewById(R.id.txtTitleHorizontal)
-    var imageViewThumb: ImageView = itemView.findViewById(R.id.ivThumb)
 
     override fun bind(response: Any, clickListener: OnItemListener) {
-        val horizontalModel = (response as ChartTracksData).data[adapterPosition]
-        horizontalModel.apply {
+        var horizontalModel: Track? = null
+        when (response) {
+            is ChartTracksData -> horizontalModel =
+                response.data[adapterPosition]
+            is TrackData -> horizontalModel =
+                response.data[adapterPosition]
+        }
+
+        horizontalModel!!.apply {
             textViewTitle.text = title
             Picasso.get().load(this.artist.picture).into(imageViewThumb)
         }
@@ -26,14 +27,18 @@ class ChartTrackViewHolder(itemView: View) :
     }
 }
 
-class ChartAlbumViewHolder(itemView: View) :
+class AlbumViewHolder(itemView: View) :
     BaseViewHolder(itemView) {
-    var textViewTitle: TextView = itemView.findViewById(R.id.txtTitleHorizontal)
-    var imageViewThumb: ImageView = itemView.findViewById(R.id.ivThumb)
 
     override fun bind(response: Any, clickListener: OnItemListener) {
-        val horizontalModel = (response as AlbumChartData).data[adapterPosition]
-        horizontalModel.apply {
+        var horizontalModel: Album? = null
+        when (response) {
+            is ChartAlbumData -> horizontalModel =
+                response.data[adapterPosition]
+            is SearchAlbumData -> horizontalModel =
+                response.data[adapterPosition]
+        }
+        horizontalModel!!.apply {
             textViewTitle.text = title
             Picasso.get().load(cover_url).into(imageViewThumb)
         }

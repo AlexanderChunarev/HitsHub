@@ -13,7 +13,6 @@ import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.hitshub.R
 import com.example.hitshub.extentions.setBottomNavigationViewVisibility
 import com.example.hitshub.extentions.showSupportActionBar
@@ -26,7 +25,6 @@ import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
 import com.example.hitshub.services.MediaPlayerService
 import com.example.hitshub.utils.NotificationHelper
-import com.example.hitshub.viewmodels.DeezerViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.Dispatchers
@@ -39,9 +37,6 @@ class PlayerFragment : Fragment() {
     val player by lazy { Player.getInstance() }
     private val handler by lazy { Handler() }
     private lateinit var runnable: Runnable
-    private val viewModel by lazy {
-        ViewModelProvider(activity!!).get(DeezerViewModel::class.java)
-    }
     private val notificationHelper by lazy {
         NotificationHelper.getInstance(activity!!.applicationContext)
     }
@@ -68,9 +63,6 @@ class PlayerFragment : Fragment() {
         initializeSeekBar()
         updateUI()
 
-        viewModel.topTrackLiveData.observe(viewLifecycleOwner, Observer {
-            player.playlist = it.data.toMutableList()
-        })
         player.prepareState.observe(viewLifecycleOwner, Observer {
             if (it == true) {
                 player.start()

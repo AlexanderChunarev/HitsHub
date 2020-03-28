@@ -1,27 +1,24 @@
 package com.example.hitshub.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hitshub.adapter.VerticalRVAdapter
 import com.example.hitshub.listener.OnItemListener
+import com.example.hitshub.media.Player
 import com.example.hitshub.models.VerticalModel
-import com.example.hitshub.viewmodels.DeezerViewModel
+import com.example.hitshub.services.MediaPlayerService
 import kotlinx.android.synthetic.main.fragment_home.*
 
 abstract class BaseMediaFragment : Fragment(), OnItemListener {
-    private val adapter by lazy {
-        VerticalRVAdapter(
-            activity!!.applicationContext,
-            arrayListVertical, this
-        )
-    }
-    private val viewModel by lazy {
-        ViewModelProvider(activity!!).get(DeezerViewModel::class.java)
-    }
+
+    val navController by lazy { NavHostFragment.findNavController(this) }
+    protected val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
+    protected val player by lazy { Player.getInstance() }
+    abstract val adapter: VerticalRVAdapter
 
     abstract val arrayListVertical: MutableList<VerticalModel>
 
@@ -36,19 +33,6 @@ abstract class BaseMediaFragment : Fragment(), OnItemListener {
                     false
                 )
             adapter = this@BaseMediaFragment.adapter
-        }
-
-        if (arrayListVertical.isEmpty()) {
-            viewModel.apply {
-                topAlbumLiveData.observe(viewLifecycleOwner, Observer {
-                    arrayListVertical.add(VerticalModel("Chart albums", it))
-                    adapter.notifyDataSetChanged()
-                })
-                topTrackLiveData.observe(viewLifecycleOwner, Observer {
-                    arrayListVertical.add(VerticalModel("Chart tracks", it))
-                    adapter.notifyDataSetChanged()
-                })
-            }
         }
     }
 }

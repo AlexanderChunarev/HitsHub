@@ -3,14 +3,45 @@ package com.example.hitshub.fragments
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
-import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.hitshub.R
+import com.example.hitshub.adapter.VerticalRVAdapter
+import com.example.hitshub.media.Player
+import com.example.hitshub.models.IAlbum
+import com.example.hitshub.models.ITrack
+import com.example.hitshub.models.VerticalModel
+import com.example.hitshub.viewmodels.DeezerViewModel
 
-class SearchFragment : Fragment() {
+class SearchFragment : BaseMediaFragment() {
+    override val adapter by lazy {
+        VerticalRVAdapter(
+            activity!!.applicationContext,
+            arrayListVertical, this
+        )
+    }
+    val viewModel: DeezerViewModel by activityViewModels()
+    override val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.apply {
+            getTrackByName.observe(viewLifecycleOwner, Observer {
+                player.playlist = it.data.toMutableList()
+                arrayListVertical.add(VerticalModel("Searched tracks", it))
+                adapter.notifyDataSetChanged()
+            })
+            getAlbumByName.observe(viewLifecycleOwner, Observer {
+                arrayListVertical.add(VerticalModel("Searched albums", it))
+                adapter.notifyDataSetChanged()
+            })
+        }
     }
 
     override fun onCreateView(
@@ -18,7 +49,6 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
@@ -28,7 +58,10 @@ class SearchFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                // search by tracks/albums in web
+                arrayListVertical.clear()
+                adapter.notifyDataSetChanged()
+                viewModel.getTrackByName(name = query!!)
+                viewModel.getAlbumByName(name = query)
                 return true
             }
 
@@ -38,5 +71,22 @@ class SearchFragment : Fragment() {
         })
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        arrayListVertical.clear()
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onClickItem(response: ITrack) {
+        serviceIntent.putExtra(Player.TRACK_INTENT, response)
+        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+        navController.navigate(R.id.player_fragment, Bundle().apply {
+            putSerializable(PlayerFragment.TRANSFER_KEY, response)
+        })
+    }
+
+    override fun onClickItem(response: IAlbum) {
     }
 }

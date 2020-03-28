@@ -1,6 +1,7 @@
 package com.example.hitshub.repositories
 
 import com.example.hitshub.builders.ServiceBuilder
+import com.example.hitshub.extentions.await
 import com.example.hitshub.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +10,7 @@ import retrofit2.await
 class DeezerRepository {
     private val serviceBuilder by lazy { ServiceBuilder.getInstance().buildService() }
 
-    suspend fun fetchAlbumByName(name: String): AlbumData = withContext(Dispatchers.IO) {
+    suspend fun fetchAlbumByName(name: String): SearchAlbumData = withContext(Dispatchers.IO) {
         serviceBuilder.searchAlbumByName(name).await()
     }
 
@@ -21,11 +22,11 @@ class DeezerRepository {
         serviceBuilder.getTrackByChart().await()
     }
 
-    suspend fun fetchAlbumByChart(): AlbumChartData = withContext(Dispatchers.IO) {
+    suspend fun fetchAlbumByChart(): ChartAlbumData = withContext(Dispatchers.IO) {
         serviceBuilder.getAlbumByChart().await()
     }
 
-    suspend fun fetchAlbumDataById(id: Long): Album = withContext(Dispatchers.IO) {
+    suspend fun fetchAlbumDataById(id: Long): AlbumById = withContext(Dispatchers.IO) {
         serviceBuilder.getAlbumDataById(id).await()
     }
 
