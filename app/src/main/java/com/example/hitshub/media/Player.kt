@@ -8,20 +8,20 @@ import com.example.hitshub.models.ITrack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class Player : MediaPlayer() {
     lateinit var track: ITrack
     lateinit var playlist: MutableList<ITrack>
     val _prepareState = MutableLiveData<Boolean>()
     val prepareState: LiveData<Boolean> get() = _prepareState
+    val _duration = MutableLiveData<Int>()
+    val trackDuration: LiveData<Int> get() = _duration
 
     suspend fun prepareMediaPlayer() = withContext(Dispatchers.IO) {
-        player.apply {
-            if (isPlaying) {
-                stop()
-                reset()
-            }
+        player.run {
             try {
+                reset()
                 setDataSource(track.preview)
                 prepare()
                 start()
@@ -29,7 +29,10 @@ class Player : MediaPlayer() {
             } catch (e: IllegalStateException) {
             } catch (e: IOException) {
             }
-            isLooping = true
+            withContext(Dispatchers.Main) {
+                _duration.value =
+                    TimeUnit.MILLISECONDS.toSeconds(this@run!!.duration.toLong()).toInt()
+            }
         }
     }
 

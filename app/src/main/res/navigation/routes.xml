@@ -12,13 +12,7 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_player_fragment"
-            app:destination="@id/player_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@id/navigation_home"
-            app:popUpToInclusive="true"/>
+            app:destination="@id/player_fragment" />
     </fragment>
     <fragment
         android:id="@+id/player_fragment"
@@ -35,4 +29,13 @@
         android:name="com.example.hitshub.fragments.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/albumPlayerFragment"
+        android:name="com.example.hitshub.fragments.AlbumPlayerFragment"
+        android:label="fragment_album_player_motion_end"
+        tools:layout="@layout/fragment_album_player" >
+        <action
+            android:id="@+id/action_albumPlayerFragment_to_player_fragment"
+            app:destination="@id/player_fragment" />
+    </fragment>
 </navigation>

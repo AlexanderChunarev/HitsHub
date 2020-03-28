@@ -9,5 +9,5 @@ data class Track(
     override val title: String,
     @Json(name = "preview")
     override val preview: String,
-    override val artist: Artist
+    override var artist: Artist?
 ) : ITrack

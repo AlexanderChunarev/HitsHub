@@ -6,9 +6,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
 import com.example.hitshub.listener.OnItemListener
-import com.example.hitshub.models.AlbumChartData
-import com.example.hitshub.models.ChartTracksData
-import com.example.hitshub.models.IRecyclerHorizontalModel
+import com.example.hitshub.models.*
 
 class HorizontalRVAdapter(
     val item: IRecyclerHorizontalModel,
@@ -19,8 +17,8 @@ class HorizontalRVAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var view: BaseViewHolder? = null
         when (viewType) {
-            TYPE_CHART_TRACKS -> {
-                view = ChartTrackViewHolder(
+            TYPE_TRACKS -> {
+                view = TrackViewHolder(
                     LayoutInflater.from(parent.context).inflate(
                         R.layout.item_horizontal,
                         parent,
@@ -28,8 +26,8 @@ class HorizontalRVAdapter(
                     )
                 )
             }
-            TYPE_CHART_ALBUMS -> {
-                view = ChartAlbumViewHolder(
+            TYPE_ALBUMS -> {
+                view = AlbumViewHolder(
                     LayoutInflater.from(parent.context).inflate(
                         R.layout.item_horizontal,
                         parent,
@@ -46,27 +44,27 @@ class HorizontalRVAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (item is ChartTracksData) {
-            return TYPE_CHART_TRACKS
-        } else if (item is AlbumChartData) {
-            return TYPE_CHART_ALBUMS
+        if (item is ChartTracksData || item is TrackData) {
+            return TYPE_TRACKS
+        } else if (item is ChartAlbumData || item is SearchAlbumData) {
+            return TYPE_ALBUMS
         }
         return -1
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            TYPE_CHART_TRACKS -> {
-                (holder as ChartTrackViewHolder).bind(item, onItemListener)
+            TYPE_TRACKS -> {
+                (holder as TrackViewHolder).bind(item, onItemListener)
             }
-            TYPE_CHART_ALBUMS -> {
-                (holder as ChartAlbumViewHolder).bind(item, onItemListener)
+            TYPE_ALBUMS -> {
+                (holder as AlbumViewHolder).bind(item, onItemListener)
             }
         }
     }
 
     companion object {
-        const val TYPE_CHART_TRACKS = 1
-        const val TYPE_CHART_ALBUMS = 2
+        const val TYPE_TRACKS = 1
+        const val TYPE_ALBUMS = 2
     }
 }

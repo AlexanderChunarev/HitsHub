@@ -28,10 +28,10 @@ class ServiceBuilder {
     }
 
     private val okHttpClient = OkHttpClient.Builder().apply {
+        connectTimeout(30, TimeUnit.SECONDS)
+        readTimeout(30, TimeUnit.SECONDS)
         addInterceptor(
             HttpLoggingInterceptor().apply {
-                connectTimeout(30, TimeUnit.SECONDS)
-                readTimeout(30, TimeUnit.SECONDS)
                 level = HttpLoggingInterceptor.Level.BASIC
             }
         )

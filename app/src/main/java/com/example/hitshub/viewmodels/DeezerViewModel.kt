@@ -11,10 +11,10 @@ import kotlinx.coroutines.withContext
 
 class DeezerViewModel : ViewModel() {
     val topTrackLiveData by lazy { MutableLiveData<ChartTracksData>() }
-    val topAlbumLiveData by lazy { MutableLiveData<AlbumChartData>() }
+    val topAlbumLiveData by lazy { MutableLiveData<ChartAlbumData>() }
     val getTrackByName by lazy { MutableLiveData<TrackData>() }
-    val getAlbymById by lazy { MutableLiveData<Album>() }
-    val getAlbumByName by lazy { MutableLiveData<AlbumData>() }
+    val getAlbumById by lazy { MutableLiveData<AlbumById>() }
+    val getAlbumByName by lazy { MutableLiveData<SearchAlbumData>() }
     val getTrackById by lazy { MutableLiveData<Track>() }
     val deezerRepo by lazy { DeezerRepository() }
 
@@ -33,15 +33,24 @@ class DeezerViewModel : ViewModel() {
     }
 
     fun getTrackByName(name: String) = GlobalScope.launch {
-        getTrackByName.value = deezerRepo.fetchTrackByName(name)
+            val response = deezerRepo.fetchTrackByName(name)
+            withContext(Dispatchers.Main) {
+                getTrackByName.value = response
+            }
     }
 
     fun getAlbumById(id: Long) = GlobalScope.launch {
-        getAlbymById.value = deezerRepo.fetchAlbumDataById(id)
+        val response = deezerRepo.fetchAlbumDataById(id)
+        withContext(Dispatchers.Main) {
+            getAlbumById.value = response
+        }
     }
 
     fun getAlbumByName(name: String) = GlobalScope.launch {
-        getAlbumByName.value = deezerRepo.fetchAlbumByName(name)
+        val response = deezerRepo.fetchAlbumByName(name)
+        withContext(Dispatchers.Main) {
+            getAlbumByName.value = response
+        }
     }
 
     fun getTrackById(id: Long) = GlobalScope.launch {

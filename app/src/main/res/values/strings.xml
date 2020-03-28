@@ -15,4 +15,10 @@
     <string name="welcome_back">Sing in</string>
     <string name="title">title</string>
     <string name="more">more</string>
+    <string name="chart_tracks">Top-10 tracks</string>
+    <string name="chart_albums">Top-10 albums</string>
+    <string name="chart_tracks_description">Popular tracks from the Deezer community</string>
+    <string name="chart_albums_description">Popular albums from the Deezer community</string>
+    <string name="searched_tracks">Searched tracks</string>
+    <string name="searched_albums">Searched albums</string>
 </resources>

@@ -34,7 +34,7 @@ class MediaPlayerService : Service() {
             withContext(Dispatchers.Main) {
                 startForeground(
                     NotificationHelper.NOTIFY_ID,
-                    notificationHelper.createNotification(track, player.isPlaying)
+                    notificationHelper.createNotification()
                 )
                 player._prepareState.value = true
             }

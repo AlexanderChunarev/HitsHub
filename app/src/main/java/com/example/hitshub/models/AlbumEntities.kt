@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Album(
+data class AlbumById(
     @Json(name = "id")
     override val id: Long,
     @Json(name = "title")
@@ -13,7 +13,7 @@ data class Album(
     override val cover_url: String,
     override val artist: Artist,
     @Json(name = "tracks")
-    val albumTracks: AlbumTracks
+    override val albumTracks: AlbumTracks
 ) : IAlbum
 
 data class AlbumTracks(

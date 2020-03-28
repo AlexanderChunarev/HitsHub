@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface DeezerApiRequests {
 
     @GET("/search/album")
-    fun searchAlbumByName(@Query("q") name: String): Call<AlbumData>
+    fun searchAlbumByName(@Query("q") name: String): Call<SearchAlbumData>
 
     @GET("/search/track")
     fun searchTrackByName(@Query("q") name: String): Call<TrackData>
@@ -18,10 +18,10 @@ interface DeezerApiRequests {
     fun getTrackByChart(): Call<ChartTracksData>
 
     @GET("/chart/0/albums")
-    fun getAlbumByChart(): Call<AlbumChartData>
+    fun getAlbumByChart(): Call<ChartAlbumData>
 
     @GET("/album/{id}")
-    fun getAlbumDataById(@Path("id")id: Long): Call<Album>
+    fun getAlbumDataById(@Path("id")id: Long): Call<AlbumById>
 
     @GET("/track/{id}")
     fun getTrackById(@Path("id")id: Long): Call<Track>
