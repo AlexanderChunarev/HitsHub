@@ -10,6 +10,7 @@ import com.example.hitshub.listener.OnItemListener
 abstract class BaseViewHolder(view: View) :
     RecyclerView.ViewHolder(view) {
     var textViewTitle: TextView = itemView.findViewById(R.id.txtTitleHorizontal)
+    var textViewArtist: TextView = itemView.findViewById(R.id.artist_name_textView)
     var imageViewThumb: ImageView = itemView.findViewById(R.id.ivThumb)
 
     abstract fun bind(response: Any, clickListener: OnItemListener)

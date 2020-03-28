@@ -34,11 +34,11 @@ class SearchFragment : BaseMediaFragment() {
         viewModel.apply {
             getTrackByName.observe(viewLifecycleOwner, Observer {
                 player.playlist = it.data.toMutableList()
-                arrayListVertical.add(VerticalModel("Searched tracks", it))
+                arrayListVertical.add(VerticalModel(getString(R.string.searched_tracks), "", it))
                 adapter.notifyDataSetChanged()
             })
             getAlbumByName.observe(viewLifecycleOwner, Observer {
-                arrayListVertical.add(VerticalModel("Searched albums", it))
+                arrayListVertical.add(VerticalModel(getString(R.string.searched_albums), "", it))
                 adapter.notifyDataSetChanged()
             })
         }

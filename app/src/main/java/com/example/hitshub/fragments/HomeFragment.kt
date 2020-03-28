@@ -39,12 +39,24 @@ class HomeFragment : BaseMediaFragment() {
         if (arrayListVertical.isEmpty()) {
             viewModel.apply {
                 topAlbumLiveData.observe(viewLifecycleOwner, Observer {
-                    arrayListVertical.add(VerticalModel("Chart albums", it))
+                    arrayListVertical.add(
+                        VerticalModel(
+                            getString(R.string.chart_albums),
+                            getString(R.string.chart_albums_description),
+                            it
+                        )
+                    )
                     adapter.notifyDataSetChanged()
                 })
                 topTrackLiveData.observe(viewLifecycleOwner, Observer {
                     player.playlist = it.data.toMutableList()
-                    arrayListVertical.add(VerticalModel("Chart tracks", it))
+                    arrayListVertical.add(
+                        VerticalModel(
+                            getString(R.string.chart_tracks),
+                            getString(R.string.chart_tracks_description),
+                            it
+                        )
+                    )
                     adapter.notifyDataSetChanged()
                 })
             }

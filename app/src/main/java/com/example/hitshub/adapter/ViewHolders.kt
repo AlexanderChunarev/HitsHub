@@ -23,7 +23,8 @@ class TrackViewHolder(itemView: View) :
 
         horizontalModel!!.apply {
             textViewTitle.text = title
-            Picasso.get().load(this.artist!!.picture).into(imageViewThumb)
+            textViewArtist.text = artist!!.name
+            Picasso.get().load(artist!!.picture).into(imageViewThumb)
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
@@ -44,6 +45,7 @@ class AlbumViewHolder(itemView: View) :
         }
         horizontalModel!!.apply {
             textViewTitle.text = title
+            textViewArtist.text = artist.name
             Picasso.get().load(cover_url).into(imageViewThumb)
         }
         itemView.setOnClickListener {

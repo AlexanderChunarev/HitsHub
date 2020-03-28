@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.example.hitshub.fragments.PlayerFragment
+import com.example.hitshub.fragments.PlayerFragment.Companion.FAST_FORWARD_SELECTOR
+import com.example.hitshub.fragments.PlayerFragment.Companion.FAST_REWIND_SELECTOR
 import com.example.hitshub.media.Player
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
-import com.example.hitshub.media.Player.Companion.TRACK_INTENT
-import com.example.hitshub.models.ITrack
 import com.example.hitshub.services.MediaPlayerService
 import com.example.hitshub.services.MediaPlayerService.Companion.STOP_SERVICE
 import com.example.hitshub.utils.NotificationHelper
@@ -22,25 +22,31 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
         val notificationHelper by lazy { NotificationHelper.getInstance(context) }
         val playerStateIntent by lazy { Intent(PlayerFragment::class.java.toString()) }
 
+        player.setOnCompletionListener {
+            player.next(FAST_REWIND_SELECTOR)
+            notificationHelper.updateNotification()
+            playerStateIntent.putExtra(RECEIVE_FAST_REWIND_ACTION_KEY, ACTION_FAST_REWIND)
+        }
+
         when (intent!!.action) {
             ACTION_PAUSE -> {
                 player.pause()
-                notificationHelper.updateNotification(
-                    intent.getSerializableExtra(TRACK_INTENT) as ITrack, player.isPlaying
-                )
+                notificationHelper.updateNotification()
                 playerStateIntent.putExtra(RECEIVE_PAUSE_ACTION_KEY, ACTION_PAUSE)
             }
             ACTION_PLAY -> {
                 player.start()
-                notificationHelper.updateNotification(
-                    intent.getSerializableExtra(TRACK_INTENT) as ITrack, player.isPlaying
-                )
+                notificationHelper.updateNotification()
                 playerStateIntent.putExtra(RECEIVE_PLAY_ACTION_KEY, ACTION_PLAY)
             }
             ACTION_FAST_FORWARD -> {
+                player.next(FAST_FORWARD_SELECTOR)
+                notificationHelper.updateNotification()
                 playerStateIntent.putExtra(RECEIVE_FAST_FORWARD_ACTION_KEY, ACTION_FAST_FORWARD)
             }
             ACTION_FAST_REWIND -> {
+                player.next(FAST_REWIND_SELECTOR)
+                notificationHelper.updateNotification()
                 playerStateIntent.putExtra(RECEIVE_FAST_REWIND_ACTION_KEY, ACTION_FAST_REWIND)
             }
             STOP_SERVICE -> {
