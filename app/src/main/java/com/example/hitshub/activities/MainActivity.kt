@@ -35,6 +35,16 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(R.id.player_fragment)
             }
         }
+//        intent.action.apply {
+//            if (this == OPEN_PLAYER_FRAGMENT) {
+//                supportFragmentManager.apply {
+//                    beginTransaction().replace(R.id.fragment_container, MiniPlayerFragment())
+//                        .commit()
+//                    beginTransaction().replace(R.id.fragment_container2, PlayerFragment()).commit()
+//                    (findViewById<MotionLayout>(R.id.motion_item_activity)).transitionToEnd()
+//                }
+//            }
+//        }
 
         viewModel.apply {
             getTopTracks()

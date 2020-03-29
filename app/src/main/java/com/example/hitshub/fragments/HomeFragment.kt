@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.VerticalRVAdapter
 import com.example.hitshub.fragments.PlayerFragment.Companion.TRANSFER_KEY
-import com.example.hitshub.media.Player
+import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
@@ -61,10 +62,17 @@ class HomeFragment : BaseMediaFragment() {
                 })
             }
         }
+
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                activity!!.finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(callback)
     }
 
     override fun onClickItem(response: ITrack) {
-        serviceIntent.putExtra(Player.TRACK_INTENT, response)
+        serviceIntent.putExtra(TRACK_INTENT, response)
         startForegroundService(activity!!.applicationContext, serviceIntent)
         navController.navigate(R.id.player_fragment, Bundle().apply {
             putSerializable(TRANSFER_KEY, response)
