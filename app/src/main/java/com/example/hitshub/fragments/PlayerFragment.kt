@@ -7,10 +7,12 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.core.content.ContextCompat
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
@@ -22,7 +24,6 @@ import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
-import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
 import com.example.hitshub.services.MediaPlayerService
 import com.squareup.picasso.Picasso
@@ -40,49 +41,61 @@ class PlayerFragment : Fragment() {
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
     private val navController by lazy { NavHostFragment.findNavController(this) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            arguments!!.apply {
-                player.track = getSerializable(TRANSFER_KEY) as ITrack
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        return inflater.inflate(R.layout.fragment_player, container, false)
+        val view = inflater.inflate(R.layout.fragment_player, container, false)
+        view.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_MOVE) {
+                Toast.makeText(activity!!.applicationContext, "DOWN", Toast.LENGTH_LONG).show()
+            }
+            return@setOnTouchListener true
+        }
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeSeekBar()
-        updateUI()
-
-        player.setOnCompletionListener {
-            player.next(FAST_FORWARD_SELECTOR)
-            startForegroundService()
-        }
-
+//        player.setOnCompletionListener {
+//            player.next(FAST_FORWARD_SELECTOR)
+//            startForegroundService()
+//        }
+        player.prepareState.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                updateUI()
+                play_button_or_pause_button.setOnClickListener {
+                    player.apply {
+                        if (this.isPlaying) {
+                            pause()
+                            updateControlButtons(ACTION_PAUSE)
+                        } else {
+                            start()
+                            updateControlButtons(ACTION_PLAY)
+                        }
+                    }
+                }
+                fast_forward_button.setOnClickListener {
+                    player.next(FAST_FORWARD_SELECTOR)
+                    startForegroundService()
+                }
+                fast_rewind_button.setOnClickListener {
+                    player.next(FAST_REWIND_SELECTOR)
+                    startForegroundService()
+                }
+            }
+        })
         chat_image_button.setOnClickListener {
             navController.navigate(R.id.chatFragment)
         }
-
-        play_button_or_pause_button.setOnClickListener {
-            setPlayerStateOnNotificationAction()
-        }
-        fast_forward_button.setOnClickListener {
-            player.next(FAST_FORWARD_SELECTOR)
-            startForegroundService()
-        }
-        fast_rewind_button.setOnClickListener {
-            player.next(FAST_REWIND_SELECTOR)
-            startForegroundService()
-        }
+//        val callback = object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                //(activity!!.findViewById(R.id.motion_item_activity) as MotionLayout) .transitionToStart()
+//            }
+//        }
+//        requireActivity().onBackPressedDispatcher.addCallback(callback)
     }
 
     private fun updateUI() {
@@ -160,22 +173,6 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun setPlayerStateOnNotificationAction() {
-        player.prepareState.observe(viewLifecycleOwner, Observer {
-            if (it == true) {
-                player.apply {
-                    if (this.isPlaying) {
-                        pause()
-                        updateControlButtons(ACTION_PAUSE)
-                    } else {
-                        start()
-                        updateControlButtons(ACTION_PLAY)
-                    }
-                }
-            }
-        })
-    }
-
     private fun startForegroundService() = GlobalScope.launch {
         if (view != null) {
             withContext(Dispatchers.Main) {
@@ -183,7 +180,7 @@ class PlayerFragment : Fragment() {
             }
             withContext(Dispatchers.IO) {
                 serviceIntent.putExtra(Player.TRACK_INTENT, player.track)
-                ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+                startForegroundService(activity!!.applicationContext, serviceIntent)
             }
             withContext(Dispatchers.Main) {
                 player._prepareState.value = true
