@@ -13,6 +13,7 @@ import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.NavHostFragment
 import com.example.hitshub.R
 import com.example.hitshub.extentions.setBottomNavigationViewVisibility
 import com.example.hitshub.extentions.showSupportActionBar
@@ -37,6 +38,7 @@ class PlayerFragment : Fragment() {
     private val handler by lazy { Handler() }
     private lateinit var runnable: Runnable
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
+    private val navController by lazy { NavHostFragment.findNavController(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +66,10 @@ class PlayerFragment : Fragment() {
         player.setOnCompletionListener {
             player.next(FAST_FORWARD_SELECTOR)
             startForegroundService()
+        }
+
+        chat_image_button.setOnClickListener {
+            navController.navigate(R.id.chatFragment)
         }
 
         play_button_or_pause_button.setOnClickListener {
@@ -120,9 +126,7 @@ class PlayerFragment : Fragment() {
     }
 
     private fun initializeSeekBar() {
-        player.trackDuration.observe(viewLifecycleOwner, Observer {
-            seekBar.max = it
-        })
+        seekBar.max = PLAYER_PREVIEW_DURATION
         handleSeekBarPosition()
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
@@ -217,5 +221,6 @@ class PlayerFragment : Fragment() {
         const val FAST_FORWARD_SELECTOR = 1
         const val FAST_REWIND_SELECTOR = -1
         const val DELAY = 1000.toLong()
+        const val PLAYER_PREVIEW_DURATION = 30
     }
 }

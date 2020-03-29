@@ -18,7 +18,11 @@
         android:id="@+id/player_fragment"
         android:name="com.example.hitshub.fragments.PlayerFragment"
         android:label="fragment_player"
-        tools:layout="@layout/fragment_player" />
+        tools:layout="@layout/fragment_player" >
+        <action
+            android:id="@+id/action_player_fragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.hitshub.fragments.ProfileFragment"
@@ -38,4 +42,9 @@
             android:id="@+id/action_albumPlayerFragment_to_player_fragment"
             app:destination="@id/player_fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.hitshub.fragments.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
 </navigation>
