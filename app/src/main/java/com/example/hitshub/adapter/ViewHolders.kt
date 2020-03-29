@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
+import com.example.hitshub.extentions.format
 import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.models.*
 import com.squareup.picasso.Picasso
@@ -68,6 +69,21 @@ class PlaylistViewHolder(itemView: View) :
             itemView.setOnClickListener {
                 clickListener.onClickItem(this)
             }
+        }
+    }
+}
+
+class ChatMessageViewHolder(itemView: View) :
+    ViewHolder(itemView) {
+    private val message: TextView = itemView.findViewById(R.id.chat_message_textView)
+    private val info: TextView = itemView.findViewById(R.id.author_message_textView)
+    private val avatarImage: ImageView = itemView.findViewById(R.id.avatar_imageView)
+
+    fun bind(messages: MutableList<Message>) {
+        messages[adapterPosition].apply {
+            info.text = StringBuilder().append("$name at ${time.format("mm:ss")}")
+            message.text = content
+            Picasso.get().load(avatarUrl).into(avatarImage)
         }
     }
 }
