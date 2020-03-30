@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fagment_player_lay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutDescription="@xml/player_to_chat_fragmet_scene"
+    android:background="@color/colorAccent"
+    android:id="@+id/fagment_player_lay"
     tools:context=".fragments.PlayerFragment">
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -34,11 +34,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/chat_fragment_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
 
         <ImageView
             android:id="@+id/background_imageView"
@@ -71,10 +72,10 @@
             android:background="@drawable/edit_text_style"
             android:ems="10"
             android:hint="@string/message"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
             android:inputType="textPersonName"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/send_message_button"
             app:layout_constraintHorizontal_weight="5"
@@ -95,7 +96,7 @@
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/text_view_info_guideline"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.65" />
@@ -104,16 +105,15 @@
         android:id="@+id/track_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
+        android:visibility="gone"
         android:text="ssdkjlhfsdhflkasjdhflaskdhflksasdasdasdajdf"
         android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
         app:layout_constraintBottom_toTopOf="@+id/track_author_text_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline" />
 
     <TextView
@@ -121,6 +121,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nickleback"
+        android:visibility="gone"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -138,16 +139,17 @@
         android:id="@+id/chat_image_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@android:color/transparent"
         android:scaleType="centerCrop"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"
         android:src="@drawable/ic_chat_bubble_24dp"
-        app:layout_constraintBottom_toTopOf="@+id/seekBar"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/favourite_image_button"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintEnd_toStartOf="@+id/favourite_image_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
         app:layout_constraintVertical_weight="0.5"
@@ -158,8 +160,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
-        android:scaleType="centerCrop"
         android:src="@drawable/ic_favorite_24dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@id/chat_image_button"
         app:layout_constraintEnd_toStartOf="@+id/share_image_button"
         app:layout_constraintStart_toEndOf="@+id/chat_image_button"
@@ -170,10 +172,10 @@
         android:id="@+id/share_image_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
-        android:scaleType="centerCrop"
         android:src="@drawable/ic_share_24dp"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@id/chat_image_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/favourite_image_button"
@@ -184,6 +186,7 @@
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/fast_rewind_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -194,9 +197,10 @@
         android:id="@+id/fast_rewind_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
         android:padding="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_fast_rewind"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -237,4 +241,4 @@
         app:layout_constraintStart_toEndOf="@+id/play_button_or_pause_button"
         app:layout_constraintTop_toTopOf="@+id/play_button_or_pause_button"
         tools:ignore="ContentDescription" />
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
 import com.example.hitshub.models.Message
 
-class MessageRecyclerViewAdapter(private val messages: MutableList<Message>) :
+class MessageRecyclerViewAdapter() :
     Adapter<ViewHolder>() {
+    val messages by lazy { mutableListOf<Message>() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ChatMessageViewHolder(

@@ -14,7 +14,7 @@ import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
 import com.example.hitshub.viewmodels.DeezerViewModel
 
-class SearchFragment : BaseMediaFragment() {
+class SearchFragment : BaseFragment() {
     override val adapter by lazy {
         VerticalRVAdapter(
             activity!!.applicationContext,
@@ -33,7 +33,7 @@ class SearchFragment : BaseMediaFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel.apply {
             getTrackByName.observe(viewLifecycleOwner, Observer {
-                player.playlist = it.data.toMutableList()
+                // player.playlist = it.data.toMutableList()
                 arrayListVertical.add(VerticalModel(getString(R.string.searched_tracks), "", it))
                 adapter.notifyDataSetChanged()
             })
@@ -83,7 +83,7 @@ class SearchFragment : BaseMediaFragment() {
         serviceIntent.putExtra(Player.TRACK_INTENT, response)
         startForegroundService(activity!!.applicationContext, serviceIntent)
         navController.navigate(R.id.player_fragment, Bundle().apply {
-            putSerializable(PlayerFragment.TRANSFER_KEY, response)
+            // putSerializable(PlayerFragment.TRANSFER_KEY, response)
         })
     }
 

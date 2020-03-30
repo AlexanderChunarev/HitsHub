@@ -19,7 +19,7 @@ import com.example.hitshub.viewmodels.DeezerViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_album_player.*
 
-class AlbumPlayerFragment : BaseMediaFragment(), OnItemListener {
+class AlbumPlayerFragment : BaseFragment(), OnItemListener {
     override val adapter by lazy {
         AlbumRecyclerViewAdapter(
             playlist,
@@ -52,7 +52,7 @@ class AlbumPlayerFragment : BaseMediaFragment(), OnItemListener {
                 serviceIntent.putExtra(Player.TRACK_INTENT, this)
                 startForegroundService(activity!!.applicationContext, serviceIntent)
                 navController.navigate(R.id.player_fragment, Bundle().apply {
-                    putSerializable(TRANSFER_KEY, this@run)
+                    // putSerializable(TRANSFER_KEY, this@run)
                 })
             }
         }
@@ -62,7 +62,7 @@ class AlbumPlayerFragment : BaseMediaFragment(), OnItemListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getAlbumById.observe(viewLifecycleOwner, Observer {
-            player.playlist.clear()
+            // player.playlist.clear()
             it.albumTracks.data.toMutableList().forEach { albumTrack ->
                 Track(
                     albumTrack.id,
@@ -71,7 +71,7 @@ class AlbumPlayerFragment : BaseMediaFragment(), OnItemListener {
                     album.artist
                 ).apply {
                     playlist.add(this)
-                    player.playlist.add(this)
+                    // player.playlist.add(this)
                 }
             }
             adapter.notifyDataSetChanged()
@@ -84,7 +84,7 @@ class AlbumPlayerFragment : BaseMediaFragment(), OnItemListener {
         serviceIntent.putExtra(Player.TRACK_INTENT, response)
         startForegroundService(activity!!.applicationContext, serviceIntent)
         navController.navigate(R.id.player_fragment, Bundle().apply {
-            putSerializable(TRANSFER_KEY, response)
+            // putSerializable(TRANSFER_KEY, response)
         })
     }
 

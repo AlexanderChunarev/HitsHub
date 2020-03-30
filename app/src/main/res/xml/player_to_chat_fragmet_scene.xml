@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        app:constraintSetEnd="@layout/fragment_player_motion_end"
+        app:constraintSetStart="@layout/fragment_player_motion_start"
+        app:duration="400">
+
+        <OnClick app:targetId="@+id/chat_image_button"
+            app:clickAction="transitionToEnd"/>
+    </Transition>
+
+</MotionScene>

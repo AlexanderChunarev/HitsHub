@@ -1,7 +1,9 @@
 package com.example.hitshub.models
 
 import com.squareup.moshi.Json
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Track(
     @Json(name = "id")
     override val id: Long,
