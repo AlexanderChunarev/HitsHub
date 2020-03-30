@@ -9,17 +9,17 @@ import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYE
 import com.example.hitshub.extentions.next
 import com.example.hitshub.fragments.BaseMediaFragment
 import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
-import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_NEXT_ACTION_KEY
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_PREV_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
+import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_NEXT_ACTION_KEY
+import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_PREV_ACTION_KEY
 import com.example.hitshub.utils.NotificationHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -146,6 +146,7 @@ class MediaPlayerService : Service() {
 
     private fun Intent.setTrackInfo() {
         this.apply {
+            putExtra(TRACK_ID, serviceTrack.id.toString())
             putExtra(TRACK_TITLE, serviceTrack.title)
             putExtra(TRACK_ARTIST, serviceTrack.artist!!.name)
             putExtra(IMAGE_URL, serviceTrack.artist!!.pictureBig)
@@ -157,6 +158,7 @@ class MediaPlayerService : Service() {
         const val FAST_REWIND_SELECTOR = -1
         const val STOP_SERVICE = "stop_foreground_service"
         const val TRACK_TITLE = "track_title"
+        const val TRACK_ID = "track_id"
         const val TRACK_ARTIST = "track_title"
         const val IMAGE_URL = "image_url"
     }

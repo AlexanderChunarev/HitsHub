@@ -12,15 +12,13 @@ import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.VerticalRVAdapter
 import com.example.hitshub.fragments.PlayerFragment.Companion.TRANSFER_KEY
-import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
 import com.example.hitshub.viewmodels.DeezerViewModel
-import kotlinx.android.synthetic.main.activity_main.*
-import java.util.ArrayList
+import java.util.*
 
 class HomeFragment : BaseFragment() {
     override val adapter by lazy {
@@ -43,7 +41,6 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
