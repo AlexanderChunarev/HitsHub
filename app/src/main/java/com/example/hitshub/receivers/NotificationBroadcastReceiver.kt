@@ -22,12 +22,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
         val notificationHelper by lazy { NotificationHelper.getInstance(context) }
         val playerStateIntent by lazy { Intent(PlayerFragment::class.java.toString()) }
 
-        player.setOnCompletionListener {
-            player.next(FAST_REWIND_SELECTOR)
-            notificationHelper.updateNotification()
-            playerStateIntent.putExtra(RECEIVE_FAST_REWIND_ACTION_KEY, ACTION_FAST_REWIND)
-        }
-
         when (intent!!.action) {
             ACTION_PAUSE -> {
                 player.pause()

@@ -32,11 +32,11 @@ class MediaPlayerService : Service() {
             player.track = track
             player.prepareMediaPlayer()
             withContext(Dispatchers.Main) {
+                player._prepareState.value = true
                 startForeground(
                     NotificationHelper.NOTIFY_ID,
                     notificationHelper.createNotification()
                 )
-                player._prepareState.value = true
             }
         }
         return START_STICKY

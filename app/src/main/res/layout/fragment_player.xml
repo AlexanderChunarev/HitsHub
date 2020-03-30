@@ -29,6 +29,18 @@
             android:background="@drawable/fading_gradient" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/chat_message_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/frameLayout" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/text_view_info_guideline"
         android:layout_width="match_parent"

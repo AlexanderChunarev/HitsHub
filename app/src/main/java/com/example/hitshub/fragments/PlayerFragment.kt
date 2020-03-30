@@ -7,13 +7,12 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import com.example.hitshub.R
@@ -24,8 +23,10 @@ import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
 import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
+import com.example.hitshub.models.Message
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
 import com.example.hitshub.services.MediaPlayerService
+import com.example.hitshub.viewmodels.FirebaseDatabaseViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.Dispatchers
@@ -35,67 +36,61 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
+    private val viewModel: FirebaseDatabaseViewModel by activityViewModels()
     private val player by lazy { Player.getInstance() }
     private val handler by lazy { Handler() }
     private lateinit var runnable: Runnable
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
     private val navController by lazy { NavHostFragment.findNavController(this) }
+    private val messages by lazy { mutableListOf<Message>() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_player, container, false)
-        view.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_MOVE) {
-                Toast.makeText(activity!!.applicationContext, "DOWN", Toast.LENGTH_LONG).show()
-            }
-            return@setOnTouchListener true
-        }
-        return view
+        return inflater.inflate(R.layout.fragment_player, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeSeekBar()
-//        player.setOnCompletionListener {
-//            player.next(FAST_FORWARD_SELECTOR)
-//            startForegroundService()
-//        }
-        player.prepareState.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                updateUI()
-                play_button_or_pause_button.setOnClickListener {
-                    player.apply {
-                        if (this.isPlaying) {
-                            pause()
-                            updateControlButtons(ACTION_PAUSE)
-                        } else {
-                            start()
-                            updateControlButtons(ACTION_PLAY)
-                        }
+
+        player.play.observe(viewLifecycleOwner, Observer { player ->
+            updateUI()
+            play_button_or_pause_button.setOnClickListener {
+                player.apply {
+                    if (this.isPlaying) {
+                        pause()
+                        updateControlButtons(ACTION_PAUSE)
+                    } else {
+                        start()
+                        updateControlButtons(ACTION_PLAY)
                     }
                 }
-                fast_forward_button.setOnClickListener {
-                    player.next(FAST_FORWARD_SELECTOR)
-                    startForegroundService()
-                }
-                fast_rewind_button.setOnClickListener {
-                    player.next(FAST_REWIND_SELECTOR)
-                    startForegroundService()
-                }
+            }
+            fast_forward_button.setOnClickListener {
+                this.player.next(FAST_FORWARD_SELECTOR)
+                startForegroundService()
+            }
+            fast_rewind_button.setOnClickListener {
+                this.player.next(FAST_REWIND_SELECTOR)
+                startForegroundService()
+            }
+            viewModel.apply {
+                getMessages(this@PlayerFragment.player.track.id.toString())
+                messages.observe(viewLifecycleOwner, Observer { mutableList ->
+                    this@PlayerFragment.messages.addAll(mutableList)
+                })
+            }
+            player.setOnCompletionListener {
+                this.player.next(FAST_FORWARD_SELECTOR)
+                startForegroundService()
             }
         })
         chat_image_button.setOnClickListener {
             navController.navigate(R.id.chatFragment)
         }
-//        val callback = object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                //(activity!!.findViewById(R.id.motion_item_activity) as MotionLayout) .transitionToStart()
-//            }
-//        }
-//        requireActivity().onBackPressedDispatcher.addCallback(callback)
     }
 
     private fun updateUI() {
@@ -143,6 +138,11 @@ class PlayerFragment : Fragment() {
         handleSeekBarPosition()
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                messages.forEach {
+                    if (it.time == i) {
+                        chat_message_textView.text = it.content
+                    }
+                }
                 if (b) {
                     player.seekTo(i * 1000)
                 }
