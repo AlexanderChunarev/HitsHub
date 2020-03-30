@@ -10,11 +10,11 @@ import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import com.example.hitshub.R
 import com.example.hitshub.activities.MainActivity
-import com.example.hitshub.activities.MainActivity.Companion.OPEN_PLAYER_FRAGMENT
+import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYER
 import com.example.hitshub.application.App
 import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.ACTION_FAST_FORWARD
-import com.example.hitshub.media.Player.Companion.ACTION_FAST_REWIND
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
@@ -31,7 +31,7 @@ class NotificationHelper(private val context: Context) {
     private val mediaSession = MediaSessionCompat(context, "tag")
     private val player by lazy { Player.getInstance() }
 
-    suspend fun createNotification() =
+    suspend fun createNotification(track: ITrack) =
         withContext(Dispatchers.IO) {
             val pauseOrStartIntent = Intent(context, NotificationBroadcastReceiver::class.java)
             val fastRewindIntent = Intent(context, NotificationBroadcastReceiver::class.java)
@@ -48,19 +48,19 @@ class NotificationHelper(private val context: Context) {
                 drawable = R.drawable.ic_play
                 pauseOrStartIntent.action = ACTION_PLAY
             }
-            pauseOrStartIntent.putExtra(TRACK_INTENT, player.track)
-            fastForwardIntent.action = ACTION_FAST_FORWARD
-            fastRewindIntent.action = ACTION_FAST_REWIND
+            pauseOrStartIntent.putExtra(TRACK_INTENT, track)
+            fastForwardIntent.action = ACTION_SKIP_NEXT
+            fastRewindIntent.action = ACTION_SKIP_PREV
             closeIntent.action = STOP_SERVICE
-            resultIntent.action = OPEN_PLAYER_FRAGMENT
+            resultIntent.action = WAKE_UP_MEDIA_PLAYER
 
             NotificationCompat.Builder(context, App.CHANNEL_1_ID)
                 .setAutoCancel(true)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.headphones_logo)
-                .setContentTitle(player.track.title)
-                .setContentText(player.track.artist!!.name)
-                .setLargeIcon(getIconBitmap(player.track))
+                .setContentTitle(track.title)
+                .setContentText(track.artist!!.name)
+                .setLargeIcon(getIconBitmap(track))
                 .addAction(
                     R.drawable.ic_fast_rewind,
                     null,
@@ -114,10 +114,10 @@ class NotificationHelper(private val context: Context) {
         )
     }
 
-    fun updateNotification() = GlobalScope.launch {
+    fun updateNotification(track: ITrack) = GlobalScope.launch {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFY_ID, createNotification())
+        notificationManager.notify(NOTIFY_ID, createNotification(track))
     }
 
     companion object {

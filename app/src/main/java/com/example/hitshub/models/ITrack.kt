@@ -1,8 +1,8 @@
 package com.example.hitshub.models
 
-import java.io.Serializable
+import android.os.Parcelable
 
-interface ITrack : Serializable {
+interface ITrack : Parcelable {
     val id: Long
     val title: String
     val preview: String

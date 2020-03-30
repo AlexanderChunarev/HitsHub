@@ -2,6 +2,7 @@ package com.example.hitshub.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 @JsonClass(generateAdapter = true)
 data class AlbumById(
@@ -21,6 +22,7 @@ data class AlbumTracks(
     val data: List<AlbumTrack>
 )
 
+@Parcelize
 data class AlbumTrack(
     @Json(name = "id")
     override val id: Long,
