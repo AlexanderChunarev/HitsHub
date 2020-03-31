@@ -4,7 +4,7 @@
 
     <Transition
         app:constraintSetEnd="@layout/activity_main_end"
-        app:constraintSetStart="@layout/activity_main_start">
+        app:constraintSetStart="@layout/activity_main">
         <OnSwipe app:dragDirection="dragUp"
             app:maxAcceleration="100"
             app:touchRegionId="@+id/mini_player_container"/>

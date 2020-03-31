@@ -4,7 +4,7 @@
 
     <Transition
         app:constraintSetEnd="@layout/fragment_player_motion_end"
-        app:constraintSetStart="@layout/fragment_player_motion_start"
+        app:constraintSetStart="@layout/fragment_player"
         app:duration="400">
 
         <OnClick app:targetId="@+id/chat_image_button"

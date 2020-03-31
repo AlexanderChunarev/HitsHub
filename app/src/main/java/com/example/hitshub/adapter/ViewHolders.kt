@@ -25,7 +25,7 @@ class TrackViewHolder(itemView: View) :
         horizontalModel!!.apply {
             textViewTitle.text = title
             textViewArtist.text = artist!!.name
-            Picasso.get().load(artist!!.picture).into(imageViewThumb)
+            Picasso.get().load(artist!!.picture).fit().into(imageViewThumb)
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
@@ -47,7 +47,7 @@ class AlbumViewHolder(itemView: View) :
         horizontalModel!!.apply {
             textViewTitle.text = title
             textViewArtist.text = artist.name
-            Picasso.get().load(cover_url).into(imageViewThumb)
+            Picasso.get().load(cover_url).fit().into(imageViewThumb)
         }
         itemView.setOnClickListener {
             clickListener.onClickItem(horizontalModel)
@@ -83,7 +83,7 @@ class ChatMessageViewHolder(itemView: View) :
         messages[adapterPosition].apply {
             info.text = StringBuilder().append("$name at ${time.format("mm:ss")}")
             message.text = content
-            Picasso.get().load(avatarUrl).into(avatarImage)
+            Picasso.get().load(avatarUrl).fit().into(avatarImage)
         }
     }
 }

@@ -56,7 +56,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
                 })
             }
         }
-        Picasso.get().load(album.artist.pictureBig).into(imageView)
+        Picasso.get().load(album.artist.pictureBig).fit().into(imageView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -77,7 +77,7 @@ class PlayerFragment : Fragment() {
             }
         })
         chat_recycler_view.apply {
-            // smoothScrollToPosition(this@PlayerFragment.adapter.messages.size)
+            smoothScrollToPosition(this@PlayerFragment.adapter.messages.size)
             layoutManager =
                 LinearLayoutManager(
                     activity!!.applicationContext,
@@ -127,6 +127,7 @@ class PlayerFragment : Fragment() {
             startForegroundService(activity!!.applicationContext, serviceIntent)
         }
         chat_image_button.setOnClickListener {
+            chat_recycler_view.smoothScrollToPosition(this@PlayerFragment.adapter.messages.size)
             (activity!!.findViewById(R.id.fagment_player_lay) as MotionLayout).transitionToEnd()
         }
         requireActivity().onBackPressedDispatcher.addCallback(callback)
@@ -135,7 +136,6 @@ class PlayerFragment : Fragment() {
     private fun updateUI(intent: Intent) {
         if (view != null) {
             intent.apply {
-                firebaseViewModel.getMessages(getStringExtra(TRACK_ID)!!)
                 track_title_text_view.text = getStringExtra(TRACK_TITLE)
                 track_author_text_view.text = getStringExtra(TRACK_ARTIST)
                 Picasso.get().load(getStringExtra(IMAGE_URL)).into(cover_big_image_view)
@@ -182,6 +182,12 @@ class PlayerFragment : Fragment() {
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+
+            if (intent?.getStringExtra(TRACK_ID) != null) {
+                firebaseViewModel.getMessages(intent.getStringExtra(TRACK_ID)!!)
+                adapter.messages.clear()
+                adapter.notifyDataSetChanged()
+            }
             updateUI(intent!!)
             when {
                 intent.getStringExtra(RECEIVE_PAUSE_ACTION_KEY) == ACTION_PAUSE -> {
