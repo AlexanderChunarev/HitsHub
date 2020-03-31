@@ -4,7 +4,7 @@
 
     <Transition
         app:constraintSetEnd="@layout/fragment_album_player_motion_end"
-        app:constraintSetStart="@layout/fragment_album_player_motion_start">
+        app:constraintSetStart="@layout/fragment_album_player">
         <OnSwipe app:dragDirection="dragUp"
             app:maxAcceleration="100"
             app:touchAnchorId="@+id/parent_recycler_view"/>
