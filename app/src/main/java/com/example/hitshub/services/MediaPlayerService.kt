@@ -16,8 +16,7 @@ import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
-import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
+import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PREPARE_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_NEXT_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_SKIP_PREV_ACTION_KEY
 import com.example.hitshub.utils.NotificationHelper
@@ -40,68 +39,26 @@ class MediaPlayerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        player.setOnCompletionListener {
+            skip(FAST_FORWARD_SELECTOR, ACTION_SKIP_NEXT)
+        }
         when (intent.action) {
             ACTION_PREPARE -> {
                 serviceTrack = intent.getParcelableExtra(TRACK_INTENT) as ITrack
                 playlist = intent.getParcelableArrayListExtra("playlist")!!
-                if (!player.isPlaying) {
-                    player.preparePlayer(serviceTrack.preview)
-                    player.setOnPreparedListener {
-                        player.start()
-                        GlobalScope.launch {
-                            withContext(Dispatchers.Main) {
-                                startForeground(
-                                    NotificationHelper.NOTIFY_ID,
-                                    notificationHelper.createNotification(serviceTrack)
-                                )
-                            }
-                        }
-                    }
-                    playerStateIntent.setTrackInfo()
-                    sendBroadcast(playerStateIntent)
-                } else {
-                    player.preparePlayer(serviceTrack.preview)
-                    player.setOnPreparedListener {
-                        player.start()
-                        notificationHelper.updateNotification(serviceTrack)
-                    }
-                    playerStateIntent.setTrackInfo()
-                    sendBroadcast(playerStateIntent)
-                }
+                prepare()
             }
             ACTION_PLAY -> {
                 play()
-                playerStateIntent.apply {
-                    removeExtra(RECEIVE_PAUSE_ACTION_KEY)
-                    putExtra(RECEIVE_PLAY_ACTION_KEY, ACTION_PLAY)
-                    setTrackInfo()
-                }
-                sendBroadcast(playerStateIntent)
             }
             ACTION_PAUSE -> {
                 pause()
-                playerStateIntent.apply {
-                    removeExtra(RECEIVE_PLAY_ACTION_KEY)
-                    putExtra(RECEIVE_PAUSE_ACTION_KEY, ACTION_PAUSE)
-                    setTrackInfo()
-                }
-                sendBroadcast(playerStateIntent)
             }
             ACTION_SKIP_NEXT -> {
-                skipNext(FAST_FORWARD_SELECTOR)
-                playerStateIntent.apply {
-                    putExtra(RECEIVE_SKIP_NEXT_ACTION_KEY, ACTION_SKIP_NEXT)
-                    setTrackInfo()
-                }
-                sendBroadcast(playerStateIntent)
+                skip(FAST_FORWARD_SELECTOR, ACTION_SKIP_NEXT)
             }
             ACTION_SKIP_PREV -> {
-                skipNext(FAST_REWIND_SELECTOR)
-                playerStateIntent.apply {
-                    putExtra(RECEIVE_SKIP_PREV_ACTION_KEY, ACTION_SKIP_PREV)
-                    setTrackInfo()
-                }
-                sendBroadcast(playerStateIntent)
+                skip(FAST_REWIND_SELECTOR, ACTION_SKIP_PREV)
             }
             WAKE_UP_MEDIA_PLAYER -> {
                 playerStateIntent.setTrackInfo()
@@ -109,6 +66,43 @@ class MediaPlayerService : Service() {
             }
         }
         return START_STICKY
+    }
+
+    private fun prepare() {
+        if (!player.isPlaying) {
+            player.apply {
+                preparePlayer(serviceTrack.preview)
+                setOnPreparedListener {
+                    start()
+                    playerStateIntent.apply {
+                        putExtra(RECEIVE_PREPARE_ACTION_KEY, ACTION_PREPARE)
+                        setTrackInfo()
+                        sendBroadcast(playerStateIntent)
+                    }
+                }
+            }
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    startForeground(
+                        NotificationHelper.NOTIFY_ID,
+                        notificationHelper.createNotification(serviceTrack)
+                    )
+                }
+            }
+        } else {
+            player.apply {
+                preparePlayer(serviceTrack.preview)
+                setOnPreparedListener {
+                    start()
+                    notificationHelper.updateNotification(serviceTrack)
+                    playerStateIntent.apply {
+                        putExtra(RECEIVE_PREPARE_ACTION_KEY, ACTION_PREPARE)
+                        setTrackInfo()
+                        sendBroadcast(playerStateIntent)
+                    }
+                }
+            }
+        }
     }
 
     private fun play() {
@@ -121,19 +115,31 @@ class MediaPlayerService : Service() {
         notificationHelper.updateNotification(serviceTrack)
     }
 
-    private fun skipNext(selector: Int) {
+    private fun skip(selector: Int, action: String) {
         player.apply {
             next(selector)
             setOnPreparedListener {
                 start()
+                when (action) {
+                    ACTION_SKIP_NEXT -> playerStateIntent.putExtra(
+                        RECEIVE_SKIP_NEXT_ACTION_KEY,
+                        ACTION_SKIP_NEXT
+                    )
+                    ACTION_SKIP_PREV -> playerStateIntent.putExtra(
+                        RECEIVE_SKIP_PREV_ACTION_KEY,
+                        ACTION_SKIP_PREV
+                    )
+                }
+                playerStateIntent.setTrackInfo()
+                sendBroadcast(playerStateIntent)
                 notificationHelper.updateNotification(serviceTrack)
             }
         }
     }
 
     private fun next(selector: Int) {
-        playlist.next(selector, serviceTrack).run {
-            serviceTrack = this
+        playlist.next(selector, serviceTrack)?.let {
+            serviceTrack = it
             player.preparePlayer(serviceTrack.preview)
         }
     }
@@ -146,7 +152,7 @@ class MediaPlayerService : Service() {
 
     private fun Intent.setTrackInfo() {
         this.apply {
-            putExtra(TRACK_ID, serviceTrack.id.toString())
+            putExtra(TRACK_ID, serviceTrack.id)
             putExtra(TRACK_TITLE, serviceTrack.title)
             putExtra(TRACK_ARTIST, serviceTrack.artist!!.name)
             putExtra(IMAGE_URL, serviceTrack.artist!!.pictureBig)
@@ -159,7 +165,7 @@ class MediaPlayerService : Service() {
         const val STOP_SERVICE = "stop_foreground_service"
         const val TRACK_TITLE = "track_title"
         const val TRACK_ID = "track_id"
-        const val TRACK_ARTIST = "track_title"
+        const val TRACK_ARTIST = "track_artist"
         const val IMAGE_URL = "image_url"
     }
 }

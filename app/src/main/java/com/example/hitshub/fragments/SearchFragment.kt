@@ -3,16 +3,16 @@ package com.example.hitshub.fragments
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
-import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.VerticalRVAdapter
-import com.example.hitshub.media.Player
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
+import com.example.hitshub.utils.Constants.EMPTY_STRING
 import com.example.hitshub.viewmodels.DeezerViewModel
+import java.util.*
 
 class SearchFragment : BaseFragment() {
     override val adapter by lazy {
@@ -23,6 +23,7 @@ class SearchFragment : BaseFragment() {
     }
     private val viewModel: DeezerViewModel by activityViewModels()
     private val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
+    private val playlist by lazy { ArrayList<ITrack>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +34,24 @@ class SearchFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel.apply {
             getTrackByName.observe(viewLifecycleOwner, Observer {
-                // player.playlist = it.data.toMutableList()
-                arrayListVertical.add(VerticalModel(getString(R.string.searched_tracks), "", it))
+                playlist.addAll(it.data)
+                arrayListVertical.add(
+                    VerticalModel(
+                        getString(R.string.searched_tracks),
+                        EMPTY_STRING,
+                        it
+                    )
+                )
                 adapter.notifyDataSetChanged()
             })
             getAlbumByName.observe(viewLifecycleOwner, Observer {
-                arrayListVertical.add(VerticalModel(getString(R.string.searched_albums), "", it))
+                arrayListVertical.add(
+                    VerticalModel(
+                        getString(R.string.searched_albums),
+                        EMPTY_STRING,
+                        it
+                    )
+                )
                 adapter.notifyDataSetChanged()
             })
         }
@@ -60,8 +73,10 @@ class SearchFragment : BaseFragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 arrayListVertical.clear()
                 adapter.notifyDataSetChanged()
-                viewModel.getTrackByName(name = query!!)
-                viewModel.getAlbumByName(name = query)
+                viewModel.apply {
+                    getTrackByName(name = query!!)
+                    getAlbumByName(name = query)
+                }
                 return true
             }
 
@@ -80,11 +95,7 @@ class SearchFragment : BaseFragment() {
     }
 
     override fun onClickItem(response: ITrack) {
-        serviceIntent.putExtra(Player.TRACK_INTENT, response)
-        startForegroundService(activity!!.applicationContext, serviceIntent)
-        navController.navigate(R.id.player_fragment, Bundle().apply {
-            // putSerializable(PlayerFragment.TRANSFER_KEY, response)
-        })
+        callMediaPlayer(response, playlist)
     }
 
     override fun onClickItem(response: IAlbum) {

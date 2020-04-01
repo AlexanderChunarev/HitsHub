@@ -2,13 +2,9 @@ package com.example.hitshub
 
 import android.view.MenuItem
 import androidx.test.annotation.UiThreadTest
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.hitshub.activities.MainActivity
-import com.example.hitshub.fragments.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -68,7 +64,6 @@ class TestBottomNavigationMenu {
     fun testViewedFragmentOnSelectedItem() {
         runBlocking {
             selectSearchItem()
-            switchToSearchFragment()
         }
     }
 
@@ -79,11 +74,5 @@ class TestBottomNavigationMenu {
         // select search item
         bottomNavigationView.selectedItemId = R.id.navigation_search
         assertTrue(bottomNavigationView.menu.findItem(R.id.navigation_search).isChecked)
-    }
-
-    private suspend fun switchToSearchFragment() = withContext(Dispatchers.Default) {
-        mainActivity.activity.supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SearchFragment()).commit()
-        onView(withId(R.id.fragment_container)).check(matches(isDisplayed()))
     }
 }

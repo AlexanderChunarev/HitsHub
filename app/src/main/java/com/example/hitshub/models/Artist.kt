@@ -10,6 +10,8 @@ data class Artist(
     val name: String,
     @Json(name = "picture")
     val picture: String,
+    @Json(name = "picture_small")
+    val pictureSmall: String,
     @Json(name = "picture_big")
     val pictureBig: String
 ) : Serializable

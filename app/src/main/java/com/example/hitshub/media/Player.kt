@@ -24,6 +24,7 @@ class Player : MediaPlayer() {
         const val ACTION_PLAY = "action.play"
         const val ACTION_SKIP_NEXT = "action.fastForward"
         const val ACTION_SKIP_PREV = "action.fastRewind"
+        const val ACTION_SEEK_TO = "action.seekTo"
         const val TRACK_INTENT = "track_key"
         private var player: Player? = null
 
