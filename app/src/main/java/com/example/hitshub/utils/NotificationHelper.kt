@@ -13,11 +13,10 @@ import com.example.hitshub.activities.MainActivity
 import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYER
 import com.example.hitshub.application.App
 import com.example.hitshub.media.Player
-import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
-import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
-import com.example.hitshub.media.Player.Companion.TRACK_INTENT
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
+import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
 import com.example.hitshub.services.MediaPlayerService.Companion.STOP_SERVICE
@@ -38,7 +37,6 @@ class NotificationHelper(private val context: Context) {
             val fastForwardIntent = Intent(context, NotificationBroadcastReceiver::class.java)
             val closeIntent = Intent(context, NotificationBroadcastReceiver::class.java)
             val resultIntent = Intent(context, MainActivity::class.java)
-
             val drawable: Int
 
             if (player.isPlaying) {
@@ -48,7 +46,6 @@ class NotificationHelper(private val context: Context) {
                 drawable = R.drawable.ic_play
                 pauseOrStartIntent.action = ACTION_PLAY
             }
-            pauseOrStartIntent.putExtra(TRACK_INTENT, track)
             fastForwardIntent.action = ACTION_SKIP_NEXT
             fastRewindIntent.action = ACTION_SKIP_PREV
             closeIntent.action = STOP_SERVICE
@@ -101,7 +98,6 @@ class NotificationHelper(private val context: Context) {
         }!!
 
     private fun getIconBitmap(track: ITrack): Bitmap {
-        println(track.artist.toString() + "lksdjflksdjflksdjfkjsd")
         return BitmapFactory.decodeStream(URL(track.artist!!.picture).openConnection().getInputStream())
     }
 

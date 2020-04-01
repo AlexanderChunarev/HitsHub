@@ -32,24 +32,47 @@
             android:background="@drawable/fading_gradient" />
     </FrameLayout>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/text_view_info_guideline2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.60" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/small_avatar_imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/chat_comment_textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline2" />
+
+    <TextView
+        android:id="@+id/chat_comment_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginStart="8dp"
+        android:textColor="@android:color/white"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/small_avatar_imageView"
+        app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline2" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/chat_fragment_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:background="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/background_imageView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/send_message_button"
@@ -58,7 +81,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_launcher_foreground"
             app:layout_constraintBottom_toBottomOf="@+id/message_editText"
-            app:layout_constraintEnd_toEndOf="@+id/background_imageView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/message_editText"
             app:layout_constraintTop_toTopOf="@+id/message_editText" />
@@ -90,7 +113,7 @@
             app:layout_constraintBottom_toTopOf="@+id/message_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/background_imageView" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.Guideline
@@ -201,7 +224,7 @@
         android:src="@drawable/ic_fast_rewind"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/play_button_or_pause_button"
+        app:layout_constraintEnd_toStartOf="@+id/play_button_or_pause"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
@@ -209,7 +232,7 @@
         tools:ignore="ContentDescription" />
 
     <ImageButton
-        android:id="@+id/play_button_or_pause_button"
+        android:id="@+id/play_button_or_pause"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
@@ -231,10 +254,10 @@
         android:padding="8dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_fast_forward"
-        app:layout_constraintBottom_toBottomOf="@+id/play_button_or_pause_button"
+        app:layout_constraintBottom_toBottomOf="@+id/play_button_or_pause"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/play_button_or_pause_button"
-        app:layout_constraintTop_toTopOf="@+id/play_button_or_pause_button"
+        app:layout_constraintStart_toEndOf="@+id/play_button_or_pause"
+        app:layout_constraintTop_toTopOf="@+id/play_button_or_pause"
         tools:ignore="ContentDescription" />
 </androidx.constraintlayout.motion.widget.MotionLayout>

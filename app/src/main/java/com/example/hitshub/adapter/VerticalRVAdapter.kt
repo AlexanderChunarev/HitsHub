@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
 import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.models.VerticalModel
+import com.example.hitshub.utils.Constants.EMPTY_STRING
 
 class VerticalRVAdapter(
     private val context: Context,
@@ -25,6 +26,7 @@ class VerticalRVAdapter(
     inner class VerticalRVViewHolder(itemView: View) : ViewHolder(itemView) {
         val recyclerView: RecyclerView = itemView.findViewById(R.id.horizontal_recycler_view)
         val title: TextView = itemView.findViewById(R.id.mini_player_title)
+        val shortDescription: TextView = itemView.findViewById(R.id.description_textView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalRVViewHolder {
@@ -40,10 +42,13 @@ class VerticalRVAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val verticalModel = arrayList[position]
         horizontalRVAdapter = HorizontalRVAdapter(verticalModel.item, onItemListener)
-        holder as VerticalRVViewHolder
         list.add(horizontalRVAdapter)
-        holder.apply {
+        (holder as VerticalRVViewHolder).apply {
+            if (verticalModel.description == EMPTY_STRING) {
+                shortDescription.height = 0
+            }
             title.text = verticalModel.title
+            shortDescription.text = verticalModel.description
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             recyclerView.adapter = horizontalRVAdapter

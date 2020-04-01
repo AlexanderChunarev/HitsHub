@@ -37,11 +37,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-//        intent.action.apply {
-//            if (this == OPEN_PLAYER_FRAGMENT) {
-//                navController.navigate(R.id.player_fragment)
-//            }
-//        }
         intent.action.apply {
             if (this == WAKE_UP_MEDIA_PLAYER) {
                 supportFragmentManager.apply {
