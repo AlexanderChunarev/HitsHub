@@ -88,7 +88,7 @@ class MiniPlayerFragment : Fragment() {
                 intent?.getStringExtra(RECEIVE_PREPARE_ACTION_KEY) == ACTION_PREPARE -> {
                     if (view != null) {
                         play_pause_button.tag = ACTION_PAUSE
-                        title_text.text = intent.getStringExtra(TRACK_TITLE)
+                        title_text_mini_player.text = intent.getStringExtra(TRACK_TITLE)
                     }
                 }
             }

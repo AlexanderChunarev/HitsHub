@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fagment_player_lay"
+    android:id="@+id/player_fragment_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutDescription="@xml/player_to_chat_fragmet_scene"
     tools:context=".fragments.PlayerFragment">
 
     <FrameLayout
@@ -32,8 +31,22 @@
             android:background="@drawable/fading_gradient" />
     </FrameLayout>
 
+    <ImageButton
+        android:id="@+id/hide_player_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="1"
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_keyboard_arrow_down"
+        app:layout_constraintBottom_toTopOf="@+id/info_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/text_view_info_guideline2"
+        android:id="@+id/info_guideline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -49,7 +62,7 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@id/chat_comment_textView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline2" />
+        app:layout_constraintTop_toTopOf="@+id/info_guideline" />
 
     <TextView
         android:id="@+id/chat_comment_textView"
@@ -62,59 +75,7 @@
         app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/small_avatar_imageView"
-        app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline2" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/chat_fragment_view"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:background="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/send_message_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_launcher_foreground"
-            app:layout_constraintBottom_toBottomOf="@+id/message_editText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/message_editText"
-            app:layout_constraintTop_toTopOf="@+id/message_editText" />
-
-        <EditText
-            android:id="@+id/message_editText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/edit_text_style"
-            android:ems="10"
-            android:hint="@string/message"
-            android:inputType="textPersonName"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/send_message_button"
-            app:layout_constraintHorizontal_weight="5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/chat_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/message_editText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toTopOf="@+id/info_guideline" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/text_view_info_guideline"
@@ -132,7 +93,6 @@
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="ssdkjlhfsdhflkasjdhflaskdhflksasdasdasdajdf"
         android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
         app:layout_constraintBottom_toTopOf="@+id/track_author_text_view"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +103,6 @@
         android:id="@+id/track_author_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nickleback"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -260,4 +219,4 @@
         app:layout_constraintStart_toEndOf="@+id/play_button_or_pause"
         app:layout_constraintTop_toTopOf="@+id/play_button_or_pause"
         tools:ignore="ContentDescription" />
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

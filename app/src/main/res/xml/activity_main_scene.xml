@@ -3,18 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
+        android:id="@+id/swipe_transition"
         app:constraintSetEnd="@layout/activity_main_end"
-        app:constraintSetStart="@layout/activity_main">
-        <OnSwipe app:dragDirection="dragUp"
-            app:maxAcceleration="100"
-            app:touchRegionId="@+id/mini_player_container"/>
-        <KeyFrameSet>
-            <KeyAttribute
-                android:alpha="0"
-                app:framePosition="85"
-                android:scaleX="0"
-                android:scaleY="0" />
-        </KeyFrameSet>
+        app:constraintSetStart="@layout/activity_main"
+        app:duration="200">
+
+        <OnClick app:clickAction="transitionToEnd"
+            app:targetId="@+id/mini_player_container"/>
     </Transition>
 
 </MotionScene>

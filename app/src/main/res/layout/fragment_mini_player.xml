@@ -23,7 +23,7 @@
         android:src="@drawable/ic_pause" />
 
     <TextView
-        android:id="@+id/title_text"
+        android:id="@+id/title_text_mini_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -3,7 +3,9 @@ package com.example.hitshub.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
+import android.widget.FrameLayout
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +22,7 @@ import java.util.*
 abstract class BaseFragment : Fragment(), OnItemListener {
     val navController by lazy { NavHostFragment.findNavController(this) }
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
+    val motionLayout by lazy { activity!!.findViewById<MotionLayout>(R.id.motion_base) }
     abstract val adapter: Adapter<ViewHolder>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,20 +36,19 @@ abstract class BaseFragment : Fragment(), OnItemListener {
                 )
             adapter = this@BaseFragment.adapter
         }
+
+        activity!!.findViewById<FrameLayout>(R.id.mini_player_container).setOnClickListener {
+            motionLayout.transitionToEnd()
+        }
     }
 
     fun callMediaPlayer(currTrack: ITrack, playlist: ArrayList<ITrack>) {
         activity!!.supportFragmentManager.apply {
             if (findFragmentByTag(MiniPlayerFragment::class.java.toString()) == null) {
                 beginTransaction().replace(
-                        R.id.mini_player_container,
-                        MiniPlayerFragment(),
-                        MiniPlayerFragment::class.java.toString()
-                    ).commit()
-                beginTransaction().replace(
-                    R.id.player_container,
-                    PlayerFragment(),
-                    PlayerFragment::class.java.toString()
+                    R.id.mini_player_container,
+                    MiniPlayerFragment(),
+                    MiniPlayerFragment::class.java.toString()
                 ).commit()
             }
         }
@@ -55,6 +57,6 @@ abstract class BaseFragment : Fragment(), OnItemListener {
             putExtra(Player.TRACK_INTENT, currTrack)
             putParcelableArrayListExtra("playlist", playlist)
         }
-        ContextCompat.startForegroundService(activity!!.applicationContext, serviceIntent)
+        startForegroundService(activity!!.applicationContext, serviceIntent)
     }
 }

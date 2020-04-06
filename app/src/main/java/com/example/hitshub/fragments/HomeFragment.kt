@@ -6,9 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -30,24 +27,20 @@ class HomeFragment : BaseFragment() {
     private val viewModel: DeezerViewModel by activityViewModels()
     private val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
     private val playlist by lazy { ArrayList<ITrack>() }
-    private val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            activity?.let {
-                val chatView = it.findViewById<ConstraintLayout>(R.id.chat_fragment_view)
-                val playerView = it.findViewById<FrameLayout>(R.id.player_container)
-                when {
-                    (chatView != null && chatView.isVisible) -> {
-                        (it.findViewById(R.id.fagment_player_lay) as MotionLayout).transitionToStart()
-                    }
-                    playerView.isVisible -> {
-                        (it.findViewById(R.id.motion_base) as MotionLayout).transitionToStart()
-                    }
-                    else -> {
-                        it.finish()
-                    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = activity!!.supportFragmentManager.findFragmentByTag("player")
+                if (fragment!!.isVisible) {
+                    motionLayout.transitionToStart()
+                } else {
+                    activity!!.finish()
                 }
             }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -58,41 +51,33 @@ class HomeFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity!!.findViewById<FrameLayout>(R.id.mini_player_container).visibility = View.GONE
-        if (arrayListVertical.isEmpty()) {
-            viewModel.apply {
-                topAlbumLiveData.observe(viewLifecycleOwner, Observer {
-                    arrayListVertical.add(
-                        VerticalModel(
-                            getString(R.string.chart_albums),
-                            getString(R.string.chart_albums_description),
-                            it
-                        )
-                    )
-                    adapter.notifyDataSetChanged()
-                })
-                topTrackLiveData.observe(viewLifecycleOwner, Observer {
-                    playlist.addAll(it.data)
-                    arrayListVertical.add(
-                        VerticalModel(
-                            getString(R.string.chart_tracks),
-                            getString(R.string.chart_tracks_description),
-                            it
-                        )
-                    )
-                    adapter.notifyDataSetChanged()
-                })
-            }
-        }
 
-        requireActivity().onBackPressedDispatcher.addCallback(callback)
+        viewModel.apply {
+            topAlbumLiveData.observe(viewLifecycleOwner, Observer {
+                arrayListVertical.add(
+                    VerticalModel(
+                        getString(R.string.chart_albums),
+                        getString(R.string.chart_albums_description),
+                        it
+                    )
+                )
+                adapter.notifyDataSetChanged()
+            })
+            topTrackLiveData.observe(viewLifecycleOwner, Observer {
+                playlist.addAll(it.data)
+                arrayListVertical.add(
+                    VerticalModel(
+                        getString(R.string.chart_tracks),
+                        getString(R.string.chart_tracks_description),
+                        it
+                    )
+                )
+                adapter.notifyDataSetChanged()
+            })
+        }
     }
 
     override fun onClickItem(response: ITrack) {

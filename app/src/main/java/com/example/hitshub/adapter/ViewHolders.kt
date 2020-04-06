@@ -56,7 +56,7 @@ class AlbumViewHolder(itemView: View) :
 
 class PlaylistViewHolder(itemView: View) :
     ViewHolder(itemView) {
-    private val titleText: TextView = itemView.findViewById(R.id.title_text)
+    private val titleText: TextView = itemView.findViewById(R.id.title_text_mini_player)
     private val artistText: TextView = itemView.findViewById(R.id.artist_textView)
     private val coverImage: ImageView = itemView.findViewById(R.id.cover_image)
 

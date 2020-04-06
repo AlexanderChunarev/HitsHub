@@ -21,10 +21,10 @@ class FirebaseRepository {
             .await()
     }
 
-    suspend fun fetchMessages(id: String): MutableList<Message> = withContext(Dispatchers.IO) {
+    suspend fun fetchMessages(id: Long): MutableList<Message> = withContext(Dispatchers.IO) {
         Firebase.firestore
             .collection("messages")
-            .whereEqualTo("trackId", id.toLong())
+            .whereEqualTo("trackId", id)
             .get().await()
             .toObjects(Message::class.java)
     }

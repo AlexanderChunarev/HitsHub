@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -34,27 +30,18 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
         if (arguments != null) {
             album = arguments!!.getSerializable(TRANSFER_KEY) as IAlbum
         }
-    }
 
-    private val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-
-            activity?.let {
-                val chatView = it.findViewById<ConstraintLayout>(R.id.chat_fragment_view)
-                val playerView = it.findViewById<FrameLayout>(R.id.player_container)
-                when {
-                    (chatView != null && chatView.isVisible) -> {
-                        (it.findViewById(R.id.fagment_player_lay) as MotionLayout).transitionToStart()
-                    }
-                    playerView.isVisible -> {
-                        (it.findViewById(R.id.motion_base) as MotionLayout).transitionToStart()
-                    }
-                    else -> {
-                        navController.navigate(R.id.navigation_home)
-                    }
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = activity!!.supportFragmentManager.findFragmentByTag("player")
+                if (fragment!!.isVisible) {
+                    motionLayout.transitionToStart()
+                } else {
+                    navController.navigate(R.id.navigation_home)
                 }
             }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -67,7 +54,6 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
         play_button.setOnClickListener {
             adapter.playlist[0].run {
                 callMediaPlayer(this, adapter.playlist)

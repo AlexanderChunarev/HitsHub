@@ -17,7 +17,7 @@ class FirebaseDatabaseViewModel : ViewModel() {
         firebaseRepository.pushMessage(message)
     }
 
-    fun getMessages(id: String) = GlobalScope.launch {
+    fun getMessages(id: Long) = GlobalScope.launch {
         val response = firebaseRepository.fetchMessages(id)
         withContext(Dispatchers.Main) {
             messages.value = response

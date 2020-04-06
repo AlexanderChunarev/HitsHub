@@ -8,25 +8,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.SeekBar
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.NavHostFragment
 import com.example.hitshub.R
-import com.example.hitshub.activities.BaseActivity
-import com.example.hitshub.adapter.MessageRecyclerViewAdapter
+import com.example.hitshub.fragments.ChatFragment.Companion.TRACK_ID_KEY
+import com.example.hitshub.fragments.ChatFragment.Companion.WRITE_MESSAGE_AT
 import com.example.hitshub.media.Player
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
+import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
+import com.example.hitshub.models.FragmentState
 import com.example.hitshub.models.Message
-import com.example.hitshub.models.User
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PREPARE_ACTION_KEY
@@ -36,22 +35,19 @@ import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_ARTIST
 import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_ID
 import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_TITLE
 import com.example.hitshub.utils.Constants.EMPTY_STRING
-import com.example.hitshub.viewmodels.FirebaseDatabaseViewModel
+import com.example.hitshub.viewmodels.FragmentStateViewModel
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main_end.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
+    private val fragmentStateViewModel: FragmentStateViewModel by activityViewModels()
+    private val navController by lazy { NavHostFragment.findNavController(this) }
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
-    private val firebaseViewModel by lazy { FirebaseDatabaseViewModel() }
-    private val user by lazy { activity!!.intent.getSerializableExtra(BaseActivity.USER) as User }
-    private val adapter by lazy {
-        MessageRecyclerViewAdapter()
-    }
+    private val motionLayout by lazy { activity!!.findViewById<MotionLayout>(R.id.motion_base) }
     private val player by lazy { Player.getInstance() }
-    private var trackID: Long? = null
+    private var fragmentState: FragmentState? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,31 +59,11 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeSeekBar()
-        with(chat_recycler_view) {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(activity!!.applicationContext)
-            adapter = this@PlayerFragment.adapter
-        }
-        firebaseViewModel.messages.observe(viewLifecycleOwner, Observer {
-            adapter.addAll(it)
+        fragmentStateViewModel.fragmentStateLiveData.observe(viewLifecycleOwner, Observer {
+            fragmentState = it
+            update()
         })
-
-        send_message_button.setOnClickListener {
-            if (message_editText.text.isNotEmpty()) {
-                Message(
-                    name = user.name,
-                    avatarUrl = user.avatarUrl,
-                    content = message_editText.text.toString(),
-                    trackId = trackID!!,
-                    time = TimeUnit.MILLISECONDS.toSeconds(20.toLong()).toInt()
-                ).apply {
-                    adapter.addItem(this)
-                    firebaseViewModel.push(this)
-                }
-            }
-        }
-
+        initializeSeekBar()
         play_button_or_pause.setOnClickListener {
             when (play_button_or_pause.tag) {
                 ACTION_PAUSE -> {
@@ -102,55 +78,85 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
+        favourite_image_button.setOnClickListener {
+        }
         fast_forward_button.setOnClickListener {
-            resetChatMessage()
             serviceIntent.action = ACTION_SKIP_NEXT
             startForegroundService(activity!!.applicationContext, serviceIntent)
         }
         fast_rewind_button.setOnClickListener {
-            resetChatMessage()
+            reset()
             serviceIntent.action = ACTION_SKIP_PREV
             startForegroundService(activity!!.applicationContext, serviceIntent)
         }
         chat_image_button.setOnClickListener {
-            (activity!!.findViewById(R.id.fagment_player_lay) as MotionLayout).transitionToEnd()
+            navController.navigate(R.id.chat_fragment, Bundle().apply {
+                putLong(TRACK_ID_KEY, fragmentState!!.trackId)
+                putLong(WRITE_MESSAGE_AT, player.currentPosition.toLong())
+            })
+        }
+        hide_player_button.setOnClickListener {
+            motionLayout.transitionToStart()
         }
     }
 
-    private fun resetChatMessage() {
+    private fun reset() {
+        seekBar.progress = 0
         chat_comment_textView.text = EMPTY_STRING
         small_avatar_imageView.setImageResource(0)
     }
 
-    private fun update(intent: Intent) {
-        trackID = intent.getLongExtra(TRACK_ID, -1)
-        trackID?.let {
-            adapter.clear()
-            firebaseViewModel.getMessages(it.toString())
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (fragmentState != null) {
+            fragmentStateViewModel.save(fragmentState!!)
         }
-        if (view != null) {
-            intent.apply {
-                track_title_text_view.text = getStringExtra(TRACK_TITLE)
-                track_author_text_view.text = getStringExtra(TRACK_ARTIST)
-                Picasso.get().load(getStringExtra(IMAGE_URL)).fit().into(cover_big_image_view)
+    }
+
+    private fun update() {
+        handleSeekBarPosition()
+        view?.let {
+            if (player.isPlaying) {
+                updateControlButtons(ACTION_PLAY)
+            } else {
+                updateControlButtons(ACTION_PAUSE)
+            }
+            fragmentState!!.apply {
+                track_title_text_view.text = this.trackTitle
+                track_author_text_view.text = this.trackAuthor
+                Picasso.get().load(this.imageUrl).fit().into(cover_big_image_view)
             }
         }
     }
 
-    fun updateControlButtons(action: String) {
+    fun saveFragmentState(intent: Intent) = FragmentState().apply {
+        with(intent) {
+            trackId = getLongExtra(TRACK_ID, -1)
+            trackAuthor = getStringExtra(TRACK_ARTIST)!!
+            trackTitle = getStringExtra(TRACK_TITLE)!!
+            imageUrl = getStringExtra(IMAGE_URL)!!
+        }
+        if (play_button_or_pause == null) {
+            tag = ACTION_PAUSE
+        } else {
+            tag = play_button_or_pause.tag.toString()
+        }
+    }
+
+    private fun updateControlButtons(action: String) {
         if (view != null) {
             when (action) {
-                ACTION_PAUSE -> play_button_or_pause.apply {
-                    activity!!.findViewById<ImageButton>(R.id.play_pause_button)
-                        .setImageResource(R.drawable.ic_play)
-                    setImageResource(R.drawable.ic_play)
-                    tag = ACTION_PLAY
+                ACTION_PAUSE -> {
+                    play_button_or_pause.apply {
+                        setImageResource(R.drawable.ic_play)
+                        tag = ACTION_PLAY
+                    }
                 }
-                ACTION_PLAY -> play_button_or_pause.apply {
-                    activity!!.findViewById<ImageButton>(R.id.play_pause_button)
-                        .setImageResource(R.drawable.ic_pause)
-                    setImageResource(R.drawable.ic_pause)
-                    tag = ACTION_PAUSE
+                ACTION_PLAY -> {
+                    play_button_or_pause.apply {
+                        setImageResource(R.drawable.ic_pause)
+                        tag = ACTION_PAUSE
+                    }
                 }
             }
         }
@@ -164,23 +170,24 @@ class PlayerFragment : Fragment() {
     }
 
     fun selectMessage(time: Int) {
-        resetChatMessage()
-        adapter.messages.getMessage(time)?.let {
-            chat_comment_textView.text = it.content
-            Picasso.get().load(it.avatarUrl).fit().into(small_avatar_imageView)
-        }
+//        adapter.messages.getMessage(time)?.let {
+//            chat_comment_textView.text = it.content
+//            Picasso.get().load(it.avatarUrl).fit().into(small_avatar_imageView)
+//        }
     }
 
-    private suspend fun handleSeekBarPosition() = withContext(Dispatchers.IO) {
-        while (player.isPlaying) {
-            withContext(Dispatchers.Main) {
-                if (activity!!.findViewById<FrameLayout>(R.id.player_container).isVisible) {
-                    seekBar.progress =
-                        TimeUnit.MILLISECONDS.toSeconds(player.currentPosition.toLong())
-                            .toInt()
+    private fun handleSeekBarPosition() = GlobalScope.launch {
+        withContext(Dispatchers.IO) {
+            while (player.currentPosition != PLAYER_PREVIEW_DURATION) {
+                withContext(Dispatchers.Main) {
+                    seekBar?.let {
+                        it.progress =
+                            TimeUnit.MILLISECONDS.toSeconds(player.currentPosition.toLong())
+                                .toInt()
+                    }
                 }
+                delay(1000)
             }
-            delay(1000)
         }
     }
 
@@ -189,10 +196,6 @@ class PlayerFragment : Fragment() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 selectMessage(i)
-                if (i == PLAYER_PREVIEW_DURATION) {
-                    seekBar.progress = 0
-                    resetChatMessage()
-                }
                 if (b) {
                     player.seekTo(i * 1000)
                 }
@@ -219,14 +222,15 @@ class PlayerFragment : Fragment() {
                         play_button_or_pause.tag = ACTION_PAUSE
                     }
                 }
-                intent?.getStringExtra(RECEIVE_PREPARE_ACTION_KEY) == Player.ACTION_PREPARE -> {
+                intent?.getStringExtra(RECEIVE_PREPARE_ACTION_KEY) == ACTION_PREPARE -> {
                     if (view != null) {
-                        GlobalScope.launch {
-                            handleSeekBarPosition()
-                        }
                         play_button_or_pause.tag = ACTION_PAUSE
-                        update(intent)
+                        fragmentState = saveFragmentState(intent)
+                    } else {
+                        fragmentState = saveFragmentState(intent)
+                        fragmentStateViewModel.save(fragmentState!!)
                     }
+                    update()
                 }
             }
         }
@@ -244,8 +248,6 @@ class PlayerFragment : Fragment() {
 
     companion object {
         const val TRANSFER_KEY = "curr_track"
-        const val DELAY = 1000.toLong()
         const val PLAYER_PREVIEW_DURATION = 30
-        const val SEEK_TO_POSITION = "seek_position"
     }
 }

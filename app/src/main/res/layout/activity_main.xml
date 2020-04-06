@@ -40,14 +40,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline_image" />
 
-    <FrameLayout
+    <fragment
         android:id="@+id/player_container"
         android:visibility="invisible"
+        android:tag="player"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/nav_view" />
+        app:layout_constraintTop_toTopOf="@id/nav_view"
+        app:navGraph="@navigation/player_routes" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
