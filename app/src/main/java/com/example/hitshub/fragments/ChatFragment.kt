@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hitshub.R
@@ -16,6 +15,8 @@ import com.example.hitshub.adapter.MessageRecyclerViewAdapter
 import com.example.hitshub.models.Message
 import com.example.hitshub.models.User
 import com.example.hitshub.viewmodels.FirebaseDatabaseViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.concurrent.TimeUnit
 
@@ -42,8 +43,8 @@ class ChatFragment : Fragment() {
         arguments?.let {
             trackID = it.getLong(TRACK_ID_KEY)
             messageAt = it.getLong(WRITE_MESSAGE_AT)
-            firebaseViewModel.getMessages(trackID!!)
         }
+
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navController.navigate(R.id.player_fragment)
@@ -54,11 +55,27 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        firebaseViewModel.messages.observe(viewLifecycleOwner, Observer {
-            it.forEach { message ->
-                adapter.addItem(message)
+        adapter.clear()
+//        firebaseViewModel.apply {
+//            getMessages(trackID!!)
+//            messages.observe(viewLifecycleOwner, Observer {
+//                it.forEach { message ->
+//                    if (message.trackId == trackID) {
+//                        adapter.addItem(message)
+//                    }
+//                }
+//            })
+//        }
+        Firebase.firestore
+            .collection("messages")
+            .whereEqualTo("trackId", trackID)
+            .addSnapshotListener { querySnapshot, _ ->
+                querySnapshot?.documentChanges.let {
+                    it!!.forEach { change ->
+                        adapter.addItem(change.document.toObject(Message::class.java))
+                    }
+                }
             }
-        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,16 +95,16 @@ class ChatFragment : Fragment() {
                     trackId = trackID!!,
                     time = TimeUnit.MILLISECONDS.toSeconds(messageAt!!).toInt()
                 ).apply {
-                    adapter.addItem(this)
                     firebaseViewModel.push(this)
                 }
             }
+            message_editText.text = null
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        adapter.clear()
+        firebaseViewModel.messages.removeObservers(viewLifecycleOwner)
     }
 
     companion object {

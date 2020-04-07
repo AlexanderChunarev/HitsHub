@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
 import com.example.hitshub.R
@@ -55,15 +54,11 @@ class MiniPlayerFragment : Fragment() {
         when (action) {
             ACTION_PAUSE -> {
                 play_pause_button.apply {
-                    activity!!.findViewById<ImageButton>(R.id.play_button_or_pause)
-                        .setImageResource(R.drawable.ic_play)
                     setImageResource(R.drawable.ic_play)
                     tag = ACTION_PLAY
                 }
             }
             ACTION_PLAY -> play_pause_button.apply {
-                activity!!.findViewById<ImageButton>(R.id.play_button_or_pause)
-                    .setImageResource(R.drawable.ic_pause)
                 setImageResource(R.drawable.ic_pause)
                 tag = ACTION_PAUSE
             }

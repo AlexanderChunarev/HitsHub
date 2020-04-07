@@ -12,17 +12,17 @@ import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
 import com.example.hitshub.utils.Constants.EMPTY_STRING
 import com.example.hitshub.viewmodels.DeezerViewModel
+import kotlinx.android.synthetic.main.fragment_search.*
 import java.util.*
 
 class SearchFragment : BaseFragment() {
     override val adapter by lazy {
         VerticalRVAdapter(
             activity!!.applicationContext,
-            arrayListVertical, this
+            arrayListOf(), this
         )
     }
     private val viewModel: DeezerViewModel by activityViewModels()
-    private val arrayListVertical by lazy { mutableListOf<VerticalModel>() }
     private val playlist by lazy { ArrayList<ITrack>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,31 +30,9 @@ class SearchFragment : BaseFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel.apply {
-            getTrackByName.observe(viewLifecycleOwner, Observer {
-                playlist.addAll(it.data)
-                arrayListVertical.add(
-                    VerticalModel(
-                        getString(R.string.searched_tracks),
-                        EMPTY_STRING,
-                        it
-                    )
-                )
-                adapter.notifyDataSetChanged()
-            })
-            getAlbumByName.observe(viewLifecycleOwner, Observer {
-                arrayListVertical.add(
-                    VerticalModel(
-                        getString(R.string.searched_albums),
-                        EMPTY_STRING,
-                        it
-                    )
-                )
-                adapter.notifyDataSetChanged()
-            })
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        parent_recycler.adapter = adapter
     }
 
     override fun onCreateView(
@@ -65,13 +43,38 @@ class SearchFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.apply {
+            getTrackByName.observe(viewLifecycleOwner, Observer {
+                playlist.addAll(it.data)
+                adapter.addItem(
+                    VerticalModel(
+                        getString(R.string.searched_tracks),
+                        EMPTY_STRING,
+                        it
+                    )
+                )
+            })
+            getAlbumByName.observe(viewLifecycleOwner, Observer {
+                adapter.addItem(
+                    VerticalModel(
+                        getString(R.string.searched_albums),
+                        EMPTY_STRING,
+                        it
+                    )
+                )
+            })
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_fragment_menu, menu)
         val searchView = menu.findItem(R.id.search_view_btn).actionView as SearchView
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                arrayListVertical.clear()
+                adapter.clear()
                 adapter.notifyDataSetChanged()
                 viewModel.apply {
                     getTrackByName(name = query!!)
@@ -86,12 +89,6 @@ class SearchFragment : BaseFragment() {
         })
 
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        arrayListVertical.clear()
-        adapter.notifyDataSetChanged()
     }
 
     override fun onClickItem(response: ITrack) {

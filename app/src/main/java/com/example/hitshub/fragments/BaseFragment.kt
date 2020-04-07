@@ -8,7 +8,6 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
@@ -16,7 +15,6 @@ import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.media.Player
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.services.MediaPlayerService
-import kotlinx.android.synthetic.main.fragment_home.*
 import java.util.*
 
 abstract class BaseFragment : Fragment(), OnItemListener {
@@ -27,15 +25,6 @@ abstract class BaseFragment : Fragment(), OnItemListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parent_recycler_view.apply {
-            layoutManager =
-                LinearLayoutManager(
-                    activity!!.applicationContext,
-                    LinearLayoutManager.VERTICAL,
-                    false
-                )
-            adapter = this@BaseFragment.adapter
-        }
 
         activity!!.findViewById<FrameLayout>(R.id.mini_player_container).setOnClickListener {
             motionLayout.transitionToEnd()

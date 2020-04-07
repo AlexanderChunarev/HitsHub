@@ -16,17 +16,21 @@ import com.example.hitshub.utils.Constants.EMPTY_STRING
 
 class VerticalRVAdapter(
     private val context: Context,
-    private val arrayList: List<VerticalModel>,
+    private val arrayList: ArrayList<VerticalModel>,
     private val onItemListener: OnItemListener
 ) :
     Adapter<ViewHolder>() {
     private val list = mutableListOf<HorizontalRVAdapter>()
     private lateinit var horizontalRVAdapter: HorizontalRVAdapter
 
-    inner class VerticalRVViewHolder(itemView: View) : ViewHolder(itemView) {
-        val recyclerView: RecyclerView = itemView.findViewById(R.id.horizontal_recycler_view)
-        val title: TextView = itemView.findViewById(R.id.mini_player_title)
-        val shortDescription: TextView = itemView.findViewById(R.id.description_textView)
+    fun addItem(verticalModel: VerticalModel) {
+        arrayList.add(verticalModel)
+        notifyItemInserted(itemCount - 1)
+    }
+
+    fun clear() {
+        arrayList.clear()
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalRVViewHolder {
@@ -37,6 +41,12 @@ class VerticalRVAdapter(
 
     override fun getItemCount(): Int {
         return arrayList.size
+    }
+
+    inner class VerticalRVViewHolder(itemView: View) : ViewHolder(itemView) {
+        val recyclerView: RecyclerView = itemView.findViewById(R.id.horizontal_recycler_view)
+        val title: TextView = itemView.findViewById(R.id.mini_player_title)
+        val shortDescription: TextView = itemView.findViewById(R.id.description_textView)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

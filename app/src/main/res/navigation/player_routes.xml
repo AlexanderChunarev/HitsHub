@@ -10,6 +10,11 @@
         android:name="com.example.hitshub.fragments.ChatFragment"
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/action_chat_fragment_to_player_fragment"
+            app:destination="@id/player_fragment"
+            app:popUpTo="@id/player_fragment"
+            app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment
@@ -20,6 +25,7 @@
         <action
             android:id="@+id/action_player_fragment_to_chatFragment"
             app:destination="@id/chat_fragment"
+            app:launchSingleTop="true"
             app:popUpTo="@id/chat_fragment"
             app:popUpToInclusive="true"/>
     </fragment>

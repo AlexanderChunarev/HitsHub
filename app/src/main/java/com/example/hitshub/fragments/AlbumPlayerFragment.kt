@@ -54,6 +54,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        parent_recycler_view.adapter = adapter
         play_button.setOnClickListener {
             adapter.playlist[0].run {
                 callMediaPlayer(this, adapter.playlist)

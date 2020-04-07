@@ -1,6 +1,6 @@
-
 package com.example.hitshub.media
 
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import com.example.hitshub.models.ITrack
 import java.io.IOException
@@ -13,6 +13,7 @@ class Player : MediaPlayer() {
         try {
             player!!.apply {
                 reset()
+                setAudioAttributes(AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
                 setDataSource(currentTrack.preview)
                 prepareAsync()
             }

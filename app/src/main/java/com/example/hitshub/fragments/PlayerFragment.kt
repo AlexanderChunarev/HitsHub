@@ -25,7 +25,6 @@ import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.models.FragmentState
-import com.example.hitshub.models.Message
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PREPARE_ACTION_KEY
@@ -35,19 +34,26 @@ import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_ARTIST
 import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_ID
 import com.example.hitshub.services.MediaPlayerService.Companion.TRACK_TITLE
 import com.example.hitshub.utils.Constants.EMPTY_STRING
+import com.example.hitshub.utils.MessageSelector
+import com.example.hitshub.utils.MessageSelector.Companion.PAUSE
+import com.example.hitshub.viewmodels.FirebaseDatabaseViewModel
 import com.example.hitshub.viewmodels.FragmentStateViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.*
+import java.lang.IllegalStateException
 import java.util.concurrent.TimeUnit
 
 class PlayerFragment : Fragment() {
     private val fragmentStateViewModel: FragmentStateViewModel by activityViewModels()
+    private val firebaseViewModel: FirebaseDatabaseViewModel by activityViewModels()
     private val navController by lazy { NavHostFragment.findNavController(this) }
     private val serviceIntent by lazy { Intent(activity, MediaPlayerService::class.java) }
     private val motionLayout by lazy { activity!!.findViewById<MotionLayout>(R.id.motion_base) }
     private val player by lazy { Player.getInstance() }
+    private val messageSelector by lazy { MessageSelector.getInstance() }
     private var fragmentState: FragmentState? = null
+    private var resetTime: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,7 +91,6 @@ class PlayerFragment : Fragment() {
             startForegroundService(activity!!.applicationContext, serviceIntent)
         }
         fast_rewind_button.setOnClickListener {
-            reset()
             serviceIntent.action = ACTION_SKIP_PREV
             startForegroundService(activity!!.applicationContext, serviceIntent)
         }
@@ -101,7 +106,6 @@ class PlayerFragment : Fragment() {
     }
 
     private fun reset() {
-        seekBar.progress = 0
         chat_comment_textView.text = EMPTY_STRING
         small_avatar_imageView.setImageResource(0)
     }
@@ -136,10 +140,10 @@ class PlayerFragment : Fragment() {
             trackTitle = getStringExtra(TRACK_TITLE)!!
             imageUrl = getStringExtra(IMAGE_URL)!!
         }
-        if (play_button_or_pause == null) {
-            tag = ACTION_PAUSE
+        tag = if (play_button_or_pause == null) {
+            ACTION_PAUSE
         } else {
-            tag = play_button_or_pause.tag.toString()
+            play_button_or_pause.tag.toString()
         }
     }
 
@@ -162,31 +166,32 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun MutableList<Message>.getMessage(time: Int): Message? {
-        val sample = run {
-            this.filter { it.time == time }.toList()
-        }
-        return if (sample.isNotEmpty()) sample.random() else null
-    }
-
     fun selectMessage(time: Int) {
-//        adapter.messages.getMessage(time)?.let {
-//            chat_comment_textView.text = it.content
-//            Picasso.get().load(it.avatarUrl).fit().into(small_avatar_imageView)
-//        }
+        messageSelector.list.forEach {
+            if (it.time == time) {
+                it.apply {
+                    chat_comment_textView.text = content
+                    Picasso.get().load(avatarUrl).fit().into(small_avatar_imageView)
+                    resetTime = it.time + PAUSE
+                }
+            }
+        }
     }
 
     private fun handleSeekBarPosition() = GlobalScope.launch {
         withContext(Dispatchers.IO) {
-            while (player.currentPosition != PLAYER_PREVIEW_DURATION) {
-                withContext(Dispatchers.Main) {
-                    seekBar?.let {
-                        it.progress =
-                            TimeUnit.MILLISECONDS.toSeconds(player.currentPosition.toLong())
-                                .toInt()
+            try {
+                while (player.currentPosition != PLAYER_PREVIEW_DURATION) {
+                    withContext(Dispatchers.Main) {
+                        seekBar?.let {
+                            it.progress =
+                                TimeUnit.MILLISECONDS.toSeconds(player.currentPosition.toLong())
+                                    .toInt()
+                        }
                     }
+                    delay(1000)
                 }
-                delay(1000)
+            } catch (e: IllegalStateException) {
             }
         }
     }
@@ -196,7 +201,11 @@ class PlayerFragment : Fragment() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 selectMessage(i)
+                if (i == resetTime) {
+                    reset()
+                }
                 if (b) {
+                    messageSelector.get(playerCurrPos = i, duration = PLAYER_PREVIEW_DURATION)
                     player.seekTo(i * 1000)
                 }
             }
@@ -224,6 +233,7 @@ class PlayerFragment : Fragment() {
                 }
                 intent?.getStringExtra(RECEIVE_PREPARE_ACTION_KEY) == ACTION_PREPARE -> {
                     if (view != null) {
+                        firebaseViewModel.getMessages(player.currentTrack.id)
                         play_button_or_pause.tag = ACTION_PAUSE
                         fragmentState = saveFragmentState(intent)
                     } else {
@@ -233,6 +243,19 @@ class PlayerFragment : Fragment() {
                     update()
                 }
             }
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        firebaseViewModel.apply {
+            messages.observe(viewLifecycleOwner, Observer {
+                messageSelector.setMessages(it)
+                messageSelector.get(
+                    playerCurrPos = 1,
+                    duration = PLAYER_PREVIEW_DURATION
+                )
+            })
         }
     }
 
