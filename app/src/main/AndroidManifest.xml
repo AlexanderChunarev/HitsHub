@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activities.ChatActivity"></activity>
         <activity
             android:name=".activities.SignInActivity"
             android:theme="@style/AppTheme.FullScreen" />
@@ -22,8 +23,8 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/AppTheme.MainActivity" />
         <activity
             android:name=".activities.SplashActivity"
             android:screenOrientation="fullSensor"

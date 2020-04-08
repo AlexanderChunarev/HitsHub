@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.AlbumRecyclerViewAdapter
-import com.example.hitshub.fragments.PlayerFragment.Companion.TRANSFER_KEY
 import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
@@ -30,18 +31,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
         if (arguments != null) {
             album = arguments!!.getSerializable(TRANSFER_KEY) as IAlbum
         }
-
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val fragment = activity!!.supportFragmentManager.findFragmentByTag("player")
-                if (fragment!!.isVisible) {
-                    motionLayout.transitionToStart()
-                } else {
-                    navController.navigate(R.id.navigation_home)
-                }
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        setBackPressCallback()
     }
 
     override fun onCreateView(
@@ -52,6 +42,19 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
         return inflater.inflate(R.layout.fragment_album_player, container, false)
     }
 
+    private fun setBackPressCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!activity!!.findViewById<LinearLayout>(R.id.mini).isVisible) {
+                    motionLayout.transitionToStart()
+                } else {
+                    navController.navigate(R.id.navigation_home)
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parent_recycler_view.adapter = adapter
@@ -60,7 +63,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
                 callMediaPlayer(this, adapter.playlist)
             }
         }
-        Picasso.get().load(album.artist.pictureBig).fit().into(imageView)
+        Picasso.get().load(album.cover_url).into(imageView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
-    tools:context=".fragments.ChatFragment">
+    android:background="@drawable/dark_gray_gradient"
+    tools:context=".activities.ChatActivity">
 
     <ImageButton
         android:id="@+id/send_message_button"
@@ -47,4 +47,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

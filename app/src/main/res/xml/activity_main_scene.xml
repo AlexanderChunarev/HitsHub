@@ -4,12 +4,21 @@
 
     <Transition
         android:id="@+id/swipe_transition"
-        app:constraintSetEnd="@layout/activity_main_end"
+        app:constraintSetEnd="@layout/activity_main_end_mini_player"
         app:constraintSetStart="@layout/activity_main"
         app:duration="200">
 
-        <OnClick app:clickAction="transitionToEnd"
-            app:targetId="@+id/mini_player_container"/>
+        <OnClick app:targetId="@+id/horizontal_item"/>
+    </Transition>
+
+    <Transition
+        app:constraintSetEnd="@layout/activity_main_end"
+        app:constraintSetStart="@layout/activity_main_end_mini_player">
+
+        <OnSwipe
+            app:maxAcceleration="100"
+            app:dragDirection="dragUp"
+            app:touchRegionId="@+id/mini"/>
     </Transition>
 
 </MotionScene>

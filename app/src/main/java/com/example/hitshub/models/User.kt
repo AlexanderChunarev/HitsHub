@@ -1,8 +1,10 @@
 package com.example.hitshub.models
 
+import android.os.Parcelable
 import com.google.firebase.firestore.Exclude
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class User(
     var uId: String,
     var name: String,
@@ -16,7 +18,7 @@ data class User(
     var isNew: Boolean = false,
     @Exclude
     var isAnonymous: Boolean = false
-) : Serializable {
+) : Parcelable {
 
     constructor() : this("", "", "", "")
 }

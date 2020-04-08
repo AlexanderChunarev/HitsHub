@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import com.example.hitshub.R
@@ -30,9 +29,9 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity!!.findViewById<FrameLayout>(R.id.mini_player_container).setOnClickListener {
-            motionLayout.transitionToEnd()
-        }
+//        activity!!.findViewById<FrameLayout>(R.id.mini_player_container).setOnClickListener {
+//            motionLayout.transitionToEnd()
+//        }
 
         button_exit.setOnClickListener {
             FirebaseAuth.getInstance().signOut()

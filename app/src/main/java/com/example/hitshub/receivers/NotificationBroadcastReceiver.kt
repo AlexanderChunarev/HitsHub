@@ -46,7 +46,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val RECEIVE_INFO = "receive_info"
         const val RECEIVE_PREPARE_ACTION_KEY = "pause_receiver_key"
         const val RECEIVE_PAUSE_ACTION_KEY = "pause_receiver_key"
         const val RECEIVE_PLAY_ACTION_KEY = "play_receiver_key"

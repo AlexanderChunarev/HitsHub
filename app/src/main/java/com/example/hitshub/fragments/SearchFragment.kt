@@ -98,7 +98,7 @@ class SearchFragment : BaseFragment() {
     override fun onClickItem(response: IAlbum) {
         viewModel.getAlbumById(response.id)
         navController.navigate(R.id.albumPlayerFragment, Bundle().apply {
-            putSerializable(PlayerFragment.TRANSFER_KEY, response)
+            putSerializable(TRANSFER_KEY, response)
         })
     }
 }

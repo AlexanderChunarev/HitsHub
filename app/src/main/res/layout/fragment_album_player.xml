@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_image"
+        app:layout_constraintBottom_toTopOf="@+id/touch_region_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +30,7 @@
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_image"
+        android:id="@+id/touch_region_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -55,7 +55,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_image" />
+        app:layout_constraintTop_toTopOf="@+id/touch_region_guideline" />
 
     <ImageButton
         android:id="@+id/like_button"
@@ -68,7 +68,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_image" />
+        app:layout_constraintTop_toTopOf="@+id/touch_region_guideline" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/parent_recycler_view"

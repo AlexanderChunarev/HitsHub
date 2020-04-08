@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.VerticalRVAdapter
-import com.example.hitshub.fragments.PlayerFragment.Companion.TRANSFER_KEY
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.models.VerticalModel
@@ -26,21 +24,6 @@ class HomeFragment : BaseFragment() {
     }
     private val viewModel: DeezerViewModel by activityViewModels()
     private val playlist by lazy { ArrayList<ITrack>() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val fragment = activity!!.supportFragmentManager.findFragmentByTag("player")
-                if (fragment!!.isVisible) {
-                    motionLayout.transitionToStart()
-                } else {
-                    activity!!.finish()
-                }
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

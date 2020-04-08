@@ -16,6 +16,8 @@ import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
+import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
+import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PREPARE_ACTION_KEY
 import com.example.hitshub.utils.NotificationHelper
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +74,7 @@ class MediaPlayerService : Service() {
     }
 
     private fun prepare() {
+        val playerStateIntent by lazy { Intent(BaseMediaFragment::class.java.toString()) }
         if (!player.isPlaying) {
             player.apply {
                 preparePlayer()
@@ -103,11 +106,21 @@ class MediaPlayerService : Service() {
 
     private fun play() {
         player.start()
+        playerStateIntent.apply {
+            removeExtra(RECEIVE_PAUSE_ACTION_KEY)
+            putExtra(RECEIVE_PLAY_ACTION_KEY, ACTION_PLAY)
+        }
+        sendBroadcast(playerStateIntent)
         notificationHelper.updateNotification(player.currentTrack)
     }
 
     private fun pause() {
         player.pause()
+        playerStateIntent.apply {
+            removeExtra(RECEIVE_PLAY_ACTION_KEY)
+            putExtra(RECEIVE_PAUSE_ACTION_KEY, ACTION_PAUSE)
+        }
+        sendBroadcast(playerStateIntent)
         notificationHelper.updateNotification(player.currentTrack)
     }
 
@@ -116,9 +129,11 @@ class MediaPlayerService : Service() {
             next(selector)
             setOnPreparedListener {
                 start()
-                playerStateIntent.putExtra(RECEIVE_PREPARE_ACTION_KEY, ACTION_PREPARE)
-                playerStateIntent.setTrackInfo()
-                sendBroadcast(playerStateIntent)
+                Intent(BaseMediaFragment::class.java.toString()).apply {
+                    putExtra(RECEIVE_PREPARE_ACTION_KEY, ACTION_PREPARE)
+                    setTrackInfo()
+                    sendBroadcast(this)
+                }
                 notificationHelper.updateNotification(player.currentTrack)
             }
         }
