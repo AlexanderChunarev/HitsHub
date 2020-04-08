@@ -11,7 +11,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/title_text"
+        app:layout_constraintEnd_toStartOf="@+id/title_text_mini_player"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,17 +19,17 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <TextView
-        android:id="@+id/title_text"
+        android:id="@+id/title_text_mini_player"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text=""
+        android:singleLine="true"
         android:fontFamily="sans-serif-light"
         app:layout_constraintBottom_toBottomOf="@+id/cover_image"
-        app:layout_constraintEnd_toStartOf="@+id/time_textView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintHorizontal_weight="4"
         app:layout_constraintStart_toEndOf="@+id/cover_image"
         app:layout_constraintTop_toTopOf="@+id/cover_image"
         app:layout_constraintVertical_bias="0" />
@@ -41,26 +41,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text=""
+        android:singleLine="true"
         android:fontFamily="sans-serif-light"
         app:layout_constraintBottom_toBottomOf="@+id/cover_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@+id/cover_image"
-        app:layout_constraintTop_toBottomOf="@+id/title_text"
-        app:layout_constraintVertical_bias="0" />
-
-    <TextView
-        android:id="@+id/time_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:text=""
-        android:fontFamily="sans-serif-light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintStart_toEndOf="@+id/title_text"
-        app:layout_constraintTop_toTopOf="@+id/cover_image"
+        app:layout_constraintTop_toBottomOf="@+id/title_text_mini_player"
         app:layout_constraintVertical_bias="0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

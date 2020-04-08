@@ -8,34 +8,28 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.hitshub.fragments.HomeFragment"
-        android:label="fragment_home"
+        android:label="HitsHub"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_albumPlayerFragment"
             app:destination="@id/albumPlayerFragment"
-            app:popUpTo="@id/routes"
+            app:popUpTo="@id/albumPlayerFragment"
             app:popUpToInclusive="true"/>
-    </fragment>
-    <fragment
-        android:id="@+id/player_fragment"
-        android:name="com.example.hitshub.fragments.PlayerFragment"
-        android:label="fragment_player"
-        tools:layout="@layout/fragment_player" >
     </fragment>
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.hitshub.fragments.ProfileFragment"
-        android:label="fragment_profile"
+        android:label="Profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.hitshub.fragments.SearchFragment"
-        android:label="fragment_search"
+        android:label="Search"
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/albumPlayerFragment"
         android:name="com.example.hitshub.fragments.AlbumPlayerFragment"
-        android:label="fragment_album_player_motion_end"
+        android:label=""
         tools:layout="@layout/fragment_album_player" >
     </fragment>
 </navigation>

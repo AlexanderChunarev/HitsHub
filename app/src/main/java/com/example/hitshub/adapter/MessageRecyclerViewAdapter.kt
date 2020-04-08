@@ -28,7 +28,6 @@ class MessageRecyclerViewAdapter :
 
     fun addItem(message: Message) {
         messages.add(message)
-        messages.size
         notifyItemInserted(messages.size - 1)
     }
 

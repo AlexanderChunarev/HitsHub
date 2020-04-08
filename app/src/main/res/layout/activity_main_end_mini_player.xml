@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/motion_base"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/motion_base"
+    app:layoutDescription="@xml/activity_main_scene"
     tools:context=".activities.MainActivity">
 
     <fragment
@@ -13,11 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/mini"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:navGraph="@navigation/routes" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -25,16 +25,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.50"/>
+        app:layout_constraintGuide_percent="0.55"/>
 
     <LinearLayout
         android:id="@+id/mini"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintVertical_bias="1"
         android:background="@drawable/red_gradient"
         android:orientation="horizontal"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/touch_region_guideline"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,10 +46,9 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="3"
-            android:visibility="gone"
-            android:background="@android:color/transparent"
             android:padding="4dp"
             android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
             android:src="@drawable/ic_pause" />
 
         <TextView
@@ -58,20 +58,18 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:visibility="gone"
             android:singleLine="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/player_container"
+        android:tag="player"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:tag="player"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/mini">
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -282,9 +280,11 @@
         app:itemIconTint="@drawable/item_selector"
         app:itemTextColor="@drawable/item_selector"
         app:layout_behavior="com.example.hitshub.utils.BottomNavigationBehavior"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,4 +17,9 @@
     <string name="searched_tracks">Searched tracks</string>
     <string name="searched_albums">Searched albums</string>
     <string name="message">Message…</string>
+    <string name="chat_message_error">Your account is anonymous. Please register to access chat</string>
+    <string name="logout">Logout</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

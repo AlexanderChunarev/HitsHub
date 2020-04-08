@@ -14,40 +14,265 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/mini_player_container"
+        app:layout_constraintBottom_toTopOf="@id/mini"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/routes" >
-
-        <requestFocus/>
-    </fragment>
+        app:navGraph="@navigation/routes" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_image"
+        android:id="@+id/touch_region_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.83"/>
+        app:layout_constraintGuide_percent="0.55"/>
 
-    <FrameLayout
-        android:id="@+id/mini_player_container"
+    <LinearLayout
+        android:id="@+id/mini"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/red_gradient"
+        android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintVertical_bias="1"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_image" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <FrameLayout
+        <ImageButton
+            android:id="@+id/play_pause_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:background="@android:color/transparent"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_pause" />
+
+        <TextView
+            android:id="@+id/title_text_mini_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="SOME TEXT"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/player_container"
+        android:tag="player"
         android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/nav_view" />
+        app:layout_constraintTop_toBottomOf="@id/mini">
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/cover_big_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:ignore="ContentDescription"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <View
+                android:id="@+id/shadow_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/fading_gradient" />
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/info_guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.60" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/small_avatar_imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/chat_comment_textView"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/info_guideline" />
+
+        <TextView
+            android:id="@+id/chat_comment_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/text_view_info_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/small_avatar_imageView"
+            app:layout_constraintTop_toTopOf="@+id/info_guideline" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/text_view_info_guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <TextView
+            android:id="@+id/track_title_text_view_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+            app:layout_constraintBottom_toTopOf="@+id/track_author_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_view_info_guideline" />
+
+        <TextView
+            android:id="@+id/track_author_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+            app:layout_constraintBottom_toTopOf="@+id/guideline2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/track_title_text_view_1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <ImageButton
+            android:id="@+id/chat_image_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_chat_bubble_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/seekBar"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/favourite_image_button"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline2"
+            app:layout_constraintVertical_weight="0.5"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/favourite_image_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_favorite_24dp"
+            app:layout_constraintBottom_toBottomOf="@id/chat_image_button"
+            app:layout_constraintEnd_toStartOf="@+id/share_image_button"
+            app:layout_constraintStart_toEndOf="@+id/chat_image_button"
+            app:layout_constraintTop_toTopOf="@+id/chat_image_button"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/share_image_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_share_24dp"
+            app:layout_constraintBottom_toBottomOf="@id/chat_image_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/favourite_image_button"
+            app:layout_constraintTop_toTopOf="@+id/chat_image_button"
+            tools:ignore="ContentDescription" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/fast_rewind_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chat_image_button"
+            app:layout_constraintVertical_weight="1" />
+
+        <ImageButton
+            android:id="@+id/fast_rewind_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_fast_rewind"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/play_button_or_pause"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBar"
+            app:layout_constraintVertical_weight="1"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/play_button_or_pause"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_pause"
+            app:layout_constraintBottom_toBottomOf="@+id/fast_rewind_button"
+            app:layout_constraintEnd_toStartOf="@+id/fast_forward_button"
+            app:layout_constraintHorizontal_weight="1.5"
+            app:layout_constraintStart_toEndOf="@+id/fast_rewind_button"
+            app:layout_constraintTop_toTopOf="@+id/fast_rewind_button"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/fast_forward_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_fast_forward"
+            app:layout_constraintBottom_toBottomOf="@+id/play_button_or_pause"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/play_button_or_pause"
+            app:layout_constraintTop_toTopOf="@+id/play_button_or_pause"
+            tools:ignore="ContentDescription" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"

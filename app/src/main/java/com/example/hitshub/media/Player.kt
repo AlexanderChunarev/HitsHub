@@ -1,15 +1,20 @@
 package com.example.hitshub.media
 
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import com.example.hitshub.models.ITrack
 import java.io.IOException
 
 class Player : MediaPlayer() {
+    lateinit var playlist: ArrayList<ITrack>
+    lateinit var currentTrack: ITrack
 
-    fun preparePlayer(url: String) {
+    fun preparePlayer() {
         try {
             player!!.apply {
                 reset()
-                setDataSource(url)
+                setAudioAttributes(AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                setDataSource(currentTrack.preview)
                 prepareAsync()
             }
         } catch (e: IllegalArgumentException) {
@@ -24,7 +29,6 @@ class Player : MediaPlayer() {
         const val ACTION_PLAY = "action.play"
         const val ACTION_SKIP_NEXT = "action.fastForward"
         const val ACTION_SKIP_PREV = "action.fastRewind"
-        const val ACTION_SEEK_TO = "action.seekTo"
         const val TRACK_INTENT = "track_key"
         private var player: Player? = null
 

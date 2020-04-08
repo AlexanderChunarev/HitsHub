@@ -4,16 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
 import com.example.hitshub.adapter.AlbumRecyclerViewAdapter
-import com.example.hitshub.fragments.PlayerFragment.Companion.TRANSFER_KEY
 import com.example.hitshub.listener.OnItemListener
 import com.example.hitshub.models.IAlbum
 import com.example.hitshub.models.ITrack
@@ -34,27 +31,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
         if (arguments != null) {
             album = arguments!!.getSerializable(TRANSFER_KEY) as IAlbum
         }
-    }
-
-    private val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-
-            activity?.let {
-                val chatView = it.findViewById<ConstraintLayout>(R.id.chat_fragment_view)
-                val playerView = it.findViewById<FrameLayout>(R.id.player_container)
-                when {
-                    (chatView != null && chatView.isVisible) -> {
-                        (it.findViewById(R.id.fagment_player_lay) as MotionLayout).transitionToStart()
-                    }
-                    playerView.isVisible -> {
-                        (it.findViewById(R.id.motion_base) as MotionLayout).transitionToStart()
-                    }
-                    else -> {
-                        navController.navigate(R.id.navigation_home)
-                    }
-                }
-            }
-        }
+        setBackPressCallback()
     }
 
     override fun onCreateView(
@@ -65,15 +42,28 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
         return inflater.inflate(R.layout.fragment_album_player, container, false)
     }
 
+    private fun setBackPressCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!activity!!.findViewById<LinearLayout>(R.id.mini).isVisible) {
+                    motionLayout.transitionToStart()
+                } else {
+                    navController.navigate(R.id.navigation_home)
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        parent_recycler_view.adapter = adapter
         play_button.setOnClickListener {
             adapter.playlist[0].run {
                 callMediaPlayer(this, adapter.playlist)
             }
         }
-        Picasso.get().load(album.artist.pictureBig).fit().into(imageView)
+        Picasso.get().load(album.cover_url).into(imageView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
