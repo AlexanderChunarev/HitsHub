@@ -8,7 +8,10 @@ class MessageSelector {
     val list by lazy { mutableListOf<Message>() }
 
     fun setMessages(messages: List<Message>) {
-        this.messages.addAll(messages)
+        this.messages.apply {
+            clear()
+            addAll(messages)
+        }
         expectedPosition = 0
     }
 

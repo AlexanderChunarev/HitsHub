@@ -2,6 +2,7 @@ package com.example.hitshub.utils
 
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -11,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.example.hitshub.R
 import com.example.hitshub.activities.MainActivity
 import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYER
+import com.example.hitshub.activities.SplashActivity
 import com.example.hitshub.application.App
 import com.example.hitshub.media.Player
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
@@ -36,7 +38,7 @@ class NotificationHelper(private val context: Context) {
             val fastRewindIntent = Intent(context, NotificationBroadcastReceiver::class.java)
             val fastForwardIntent = Intent(context, NotificationBroadcastReceiver::class.java)
             val closeIntent = Intent(context, NotificationBroadcastReceiver::class.java)
-            val resultIntent = Intent(context, MainActivity::class.java)
+            val resultIntent = Intent(context, SplashActivity::class.java)
             val drawable: Int
 
             if (player.isPlaying) {
@@ -89,7 +91,7 @@ class NotificationHelper(private val context: Context) {
                         context,
                         ACTIVITY_REQUEST_CODE,
                         resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        FLAG_UPDATE_CURRENT
                     )
                 )
                 .setAutoCancel(true)
@@ -106,7 +108,7 @@ class NotificationHelper(private val context: Context) {
             context,
             requestCode,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            FLAG_UPDATE_CURRENT
         )
     }
 

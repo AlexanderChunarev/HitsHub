@@ -25,7 +25,7 @@ class VerticalRVAdapter(
 
     fun addItem(verticalModel: VerticalModel) {
         arrayList.add(verticalModel)
-        notifyItemInserted(itemCount - 1)
+        notifyItemInserted(itemCount)
     }
 
     fun clear() {
