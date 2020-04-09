@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.hitshub.fragments.HomeFragment"
-        android:label="HitsHub"
+
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_albumPlayerFragment"
@@ -19,17 +19,17 @@
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.hitshub.fragments.ProfileFragment"
-        android:label="Profile"
+
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.hitshub.fragments.SearchFragment"
-        android:label="Search"
+
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/albumPlayerFragment"
         android:name="com.example.hitshub.fragments.AlbumPlayerFragment"
-        android:label=""
+
         tools:layout="@layout/fragment_album_player" >
     </fragment>
 </navigation>

@@ -2,12 +2,12 @@ package com.example.hitshub.media
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import com.example.hitshub.models.ITrack
+import com.example.hitshub.models.Track
 import java.io.IOException
 
 class Player : MediaPlayer() {
-    lateinit var playlist: ArrayList<ITrack>
-    lateinit var currentTrack: ITrack
+    lateinit var playlist: ArrayList<Track>
+    lateinit var currentTrack: Track
 
     fun preparePlayer() {
         try {

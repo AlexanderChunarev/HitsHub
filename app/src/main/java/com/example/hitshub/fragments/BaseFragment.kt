@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.hitshub.R
 import com.example.hitshub.listener.OnItemListener
-import com.example.hitshub.media.Player
+import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
+import com.example.hitshub.media.Player.Companion.TRACK_INTENT
 import com.example.hitshub.models.ITrack
 import com.example.hitshub.services.MediaPlayerService
 import java.util.*
@@ -27,8 +28,8 @@ abstract class BaseFragment : Fragment(), OnItemListener {
             motionLayout.transitionToEnd()
         }
         serviceIntent.apply {
-            action = Player.ACTION_PREPARE
-            putExtra(Player.TRACK_INTENT, currTrack)
+            action = ACTION_PREPARE
+            putExtra(TRACK_INTENT, currTrack)
             putParcelableArrayListExtra("playlist", playlist)
         }
         startForegroundService(activity!!.applicationContext, serviceIntent)

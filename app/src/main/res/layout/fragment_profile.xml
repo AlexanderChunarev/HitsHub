@@ -7,51 +7,64 @@
     android:background="@color/light_gray"
     tools:context=".fragments.ProfileFragment">
 
-    <Button
-        android:id="@+id/button_exit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/logout"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
-        android:background="@drawable/red_button_style"
-        app:layout_constraintVertical_bias="1"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/info_guideline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.30" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintVertical_weight="5"
-        android:layout_marginTop="8dp"
+        android:layout_margin="8dp"
+        app:layout_constraintVertical_bias="0"
         android:src="@drawable/background_splash_screen"
-        app:layout_constraintBottom_toTopOf="@id/name_textView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/name_textView"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintVertical_weight="5" />
 
     <TextView
         android:id="@+id/name_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintVertical_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/info_guideline"
+        app:layout_constraintHorizontal_weight="5"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="@+id/avatar_image_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/avatar_image_view"
+        app:layout_constraintTop_toTopOf="@+id/avatar_image_view" />
+
+    <TextView
+        android:id="@+id/liked_tracks_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/liked_tracks"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/avatar_image_view" />
+        app:layout_constraintTop_toBottomOf="@+id/avatar_image_view"
+        app:layout_constraintVertical_bias="0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/liked_tracks_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/liked_tracks_textView"
+        app:layout_constraintStart_toStartOf="@+id/liked_tracks_textView"
+        app:layout_constraintTop_toBottomOf="@+id/liked_tracks_textView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_NEXT
 import com.example.hitshub.media.Player.Companion.ACTION_SKIP_PREV
 import com.example.hitshub.media.Player.Companion.TRACK_INTENT
-import com.example.hitshub.models.ITrack
+import com.example.hitshub.models.Track
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PAUSE_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PLAY_ACTION_KEY
 import com.example.hitshub.receivers.NotificationBroadcastReceiver.Companion.RECEIVE_PREPARE_ACTION_KEY
@@ -36,9 +36,9 @@ class MediaPlayerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        player.setOnCompletionListener {
-            skip(FAST_FORWARD_SELECTOR)
-        }
+//        player.setOnCompletionListener {
+//            skip(FAST_FORWARD_SELECTOR)
+//        }
         GlobalScope.launch {
             withContext(Dispatchers.Main) {
                 startForeground(
@@ -49,7 +49,7 @@ class MediaPlayerService : Service() {
         }
         when (intent.action) {
             ACTION_PREPARE -> {
-                player.currentTrack = intent.getParcelableExtra(TRACK_INTENT) as ITrack
+                player.currentTrack = intent.getParcelableExtra(TRACK_INTENT) as Track
                 player.playlist = intent.getParcelableArrayListExtra("playlist")!!
                 prepare()
             }
