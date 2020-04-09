@@ -1,15 +1,26 @@
 package com.example.hitshub.models
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
+@Entity(tableName = "liked_track")
 data class Track(
     @Json(name = "id")
-    override val id: Long,
+    @ColumnInfo
+    @PrimaryKey
+    override var id: Long,
     @Json(name = "title")
-    override val title: String,
+    @ColumnInfo
+    override var title: String,
     @Json(name = "preview")
-    override val preview: String,
+    @ColumnInfo
+    override var preview: String,
+    @ColumnInfo
     override var artist: Artist?
-) : ITrack
+) : ITrack {
+    constructor() : this(0, "", "", null)
+}

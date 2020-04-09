@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -36,6 +38,7 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parent_recycler_view.adapter = adapter
+        (activity!! as AppCompatActivity).setSupportActionBar(toolbar as Toolbar?)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

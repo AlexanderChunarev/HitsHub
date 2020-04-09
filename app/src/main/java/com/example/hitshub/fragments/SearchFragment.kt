@@ -3,6 +3,8 @@ package com.example.hitshub.fragments
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.hitshub.R
@@ -32,7 +34,10 @@ class SearchFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parent_recycler.adapter = adapter
+        parent_recycler_view.adapter = adapter
+        val toolbar = toolbar as Toolbar
+        toolbar.title = "Search"
+        (activity!! as AppCompatActivity).setSupportActionBar(toolbar as Toolbar?)
     }
 
     override fun onCreateView(
@@ -45,6 +50,7 @@ class SearchFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel.apply {
             getTrackByName.observe(viewLifecycleOwner, Observer {
                 playlist.addAll(it.data)

@@ -17,7 +17,7 @@ class AlbumRecyclerViewAdapter(
 
     fun addItem(iTrack: ITrack) {
         playlist.add(iTrack)
-        notifyItemInserted(itemCount)
+        notifyItemInserted(itemCount - 1)
     }
 
     fun clear() {

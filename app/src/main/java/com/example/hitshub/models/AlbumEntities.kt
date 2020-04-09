@@ -25,9 +25,9 @@ data class AlbumTracks(
 @Parcelize
 data class AlbumTrack(
     @Json(name = "id")
-    override val id: Long,
+    override var id: Long,
     @Json(name = "title")
-    override val title: String,
+    override var title: String,
     @Json(name = "preview")
-    override val preview: String
+    override var preview: String
 ) : ITrack

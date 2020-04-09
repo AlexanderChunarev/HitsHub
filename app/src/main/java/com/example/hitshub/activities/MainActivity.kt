@@ -16,8 +16,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.hitshub.R
 import com.example.hitshub.activities.BaseActivity.Companion.USER
@@ -34,11 +32,13 @@ import com.example.hitshub.models.User
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
 import com.example.hitshub.services.MediaPlayerService
 import com.example.hitshub.utils.Constants.EMPTY_STRING
+import com.example.hitshub.utils.InjectorUtils
 import com.example.hitshub.utils.MessageSelector
 import com.example.hitshub.utils.MessageSelector.Companion.PAUSE
 import com.example.hitshub.viewmodels.DeezerViewModel
 import com.example.hitshub.viewmodels.FirebaseDatabaseViewModel
 import com.example.hitshub.viewmodels.FragmentStateViewModel
+import com.example.hitshub.viewmodels.MediaViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -48,6 +48,10 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this).get(DeezerViewModel::class.java)
+    }
+    private val factory by lazy { InjectorUtils.provideViewModelFactory(this) }
+    private val mediaViewModel by lazy {
+        ViewModelProvider(this, factory).get(MediaViewModel::class.java)
     }
     private val user by lazy { intent.getParcelableExtra<User>(USER) }
     private val fragmentStateViewModel: FragmentStateViewModel by viewModels()
@@ -65,12 +69,12 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_search, R.id.navigation_profile
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+//        val appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.navigation_home, R.id.navigation_search, R.id.navigation_profile
+//            )
+//        )
+//        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         getMessages()
         setBackPressCallback()
@@ -84,6 +88,17 @@ class MainActivity : AppCompatActivity() {
         fast_rewind_button.setOnClickListener {
             serviceIntent.action = Player.ACTION_SKIP_PREV
             startForegroundService(this, serviceIntent)
+        }
+        favourite_image_button.setOnClickListener {
+            if (favourite_image_button.tag == LIKED) {
+                favourite_image_button.tag = UNLIKE
+                favourite_image_button.setImageResource(R.drawable.ic_favorite_24dp)
+                mediaViewModel.deleteTrack(player.currentTrack.id.toString())
+            } else {
+                favourite_image_button.tag = LIKED
+                favourite_image_button.setImageResource(R.drawable.ic_favorite_pressed)
+                mediaViewModel.insertTrack(player.currentTrack)
+            }
         }
         chat_image_button.setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java).apply {
@@ -105,10 +120,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setFavouriteStatus() {
+        mediaViewModel.apply {
+            selectTrackById(player.currentTrack.id.toString())
+            trackLiveData.observe(this@MainActivity, Observer {
+                if (it != null) {
+                    favourite_image_button.tag = LIKED
+                    favourite_image_button.setImageResource(R.drawable.ic_favorite_pressed)
+                } else {
+                    favourite_image_button.tag = UNLIKE
+                    favourite_image_button.setImageResource(R.drawable.ic_favorite_24dp)
+                }
+            })
+        }
+    }
+
     private fun getMessages() {
         firebaseViewModel.apply {
             messages.observe(this@MainActivity, Observer {
-                messageSelector.setMessages(it)
+                messageSelector.setMessages(it.filter { message -> message.trackId == player.currentTrack.id })
                 messageSelector.get(
                     playerCurrPos = 1,
                     duration = PLAYER_PREVIEW_DURATION
@@ -199,15 +229,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun selectMessage(time: Int) {
-            messageSelector.list.forEach {
-                if (it.time == time) {
-                    it.apply {
-                        chat_comment_textView.text = content
-                        Picasso.get().load(avatarUrl).fit().into(small_avatar_imageView)
-                        resetTime = it.time + PAUSE
-                    }
+        messageSelector.list.forEach {
+            if (it.time == time) {
+                it.apply {
+                    chat_comment_textView.text = content
+                    Picasso.get().load(avatarUrl).fit().into(small_avatar_imageView)
+                    resetTime = it.time + PAUSE
                 }
             }
+        }
     }
 
     private fun reset() {
@@ -257,6 +287,7 @@ class MainActivity : AppCompatActivity() {
                     play_pause_button.tag = ACTION_PAUSE
                     fragmentState = saveFragmentState(intent)
                     fragmentStateViewModel.save(fragmentState!!)
+                    setFavouriteStatus()
                     update()
                 }
             }
@@ -292,7 +323,14 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
+    }
+
     companion object {
         const val WAKE_UP_MEDIA_PLAYER = "open_player_from_notification"
+        const val LIKED = "liked"
+        const val UNLIKE = "unlike"
     }
 }

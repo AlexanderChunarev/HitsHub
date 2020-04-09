@@ -22,8 +22,7 @@
         <item name="android:windowBackground">@drawable/background_splash_screen</item>
     </style>
 
-    <style name="AppTheme.MainActivity" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowFullscreen">true</item>
+    <style name="AppTheme.MainActivity" parent="Theme.AppCompat.Light.NoActionBar">
     </style>
 
     <style name="SlideActivityAnimation" parent="@android:style/Animation.Activity">
