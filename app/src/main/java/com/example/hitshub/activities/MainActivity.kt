@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.hitshub.R
+import com.example.hitshub.activities.BaseActivity.Companion.ACTION_WAKE_UP
 import com.example.hitshub.activities.BaseActivity.Companion.USER
 import com.example.hitshub.activities.ChatActivity.Companion.TRACK_ID_KEY
 import com.example.hitshub.activities.ChatActivity.Companion.USER_KEY
@@ -27,6 +30,7 @@ import com.example.hitshub.fragments.BaseMediaFragment
 import com.example.hitshub.media.Player
 import com.example.hitshub.media.Player.Companion.ACTION_PAUSE
 import com.example.hitshub.media.Player.Companion.ACTION_PLAY
+import com.example.hitshub.media.Player.Companion.ACTION_PREPARE
 import com.example.hitshub.models.FragmentState
 import com.example.hitshub.models.User
 import com.example.hitshub.receivers.NotificationBroadcastReceiver
@@ -54,13 +58,11 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this, factory).get(MediaViewModel::class.java)
     }
     private val user by lazy { intent.getParcelableExtra<User>(USER) }
-    private val fragmentStateViewModel: FragmentStateViewModel by viewModels()
     private val firebaseViewModel: FirebaseDatabaseViewModel by viewModels()
     private val serviceIntent by lazy { Intent(this, MediaPlayerService::class.java) }
     private val motionLayout by lazy { findViewById<MotionLayout>(R.id.motion_base) }
     private val player by lazy { Player.getInstance() }
     private val messageSelector by lazy { MessageSelector.getInstance() }
-    private var fragmentState: FragmentState? = null
     private var resetTime: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +83,10 @@ class MainActivity : AppCompatActivity() {
         initializeSeekBar()
         play_pause_button.setListener()
         play_button_or_pause.setListener()
+        player.setOnCompletionListener {
+            serviceIntent.action = Player.ACTION_SKIP_NEXT
+            startForegroundService(this, serviceIntent)
+        }
         fast_forward_button.setOnClickListener {
             serviceIntent.action = Player.ACTION_SKIP_NEXT
             startForegroundService(this, serviceIntent)
@@ -101,15 +107,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
         chat_image_button.setOnClickListener {
-            startActivity(Intent(this, ChatActivity::class.java).apply {
-                putExtra(TRACK_ID_KEY, player.currentTrack.id)
-                putExtra(WRITE_MESSAGE_AT, seekBar.progress)
-                putExtra(USER_KEY, user)
-            })
+            if (!user!!.isAnonymous) {
+                startActivity(Intent(this, ChatActivity::class.java).apply {
+                    val user = user
+                    putExtra(TRACK_ID_KEY, player.currentTrack.id)
+                    putExtra(WRITE_MESSAGE_AT, seekBar.progress)
+                    putExtra(USER_KEY, user)
+                })
+            } else {
+                Toast.makeText(this, "Please register to access chat", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        intent.action.apply {
-            if (this == WAKE_UP_MEDIA_PLAYER) {
+        intent.getStringExtra(WAKE_UP_MEDIA_PLAYER).apply {
+            if (this == ACTION_WAKE_UP) {
+                if (!findViewById<LinearLayout>(R.id.mini).isVisible) {
+                    motionLayout.transitionToEnd()
+                }
                 serviceIntent.action = WAKE_UP_MEDIA_PLAYER
                 startForegroundService(this@MainActivity, serviceIntent)
             }
@@ -185,28 +199,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun saveFragmentState(intent: Intent) = FragmentState().apply {
-        with(intent) {
-            trackId = getLongExtra(MediaPlayerService.TRACK_ID, -1)
-            trackAuthor = getStringExtra(MediaPlayerService.TRACK_ARTIST)!!
-            trackTitle = getStringExtra(MediaPlayerService.TRACK_TITLE)!!
-            imageUrl = getStringExtra(MediaPlayerService.IMAGE_URL)!!
-        }
-        tag = if (play_button_or_pause == null) {
-            ACTION_PAUSE
-        } else {
-            play_button_or_pause.tag.toString()
-        }
-    }
-
-    private fun update() {
+    private fun update(intent: Intent) {
         handleSeekBarPosition()
         updateControlButtons()
-        fragmentState!!.apply {
-            track_author_text_view.text = trackAuthor
-            track_title_text_view_1.text = trackTitle
-            title_text_mini_player.text = trackTitle
-            Picasso.get().load(imageUrl).into(cover_big_image_view)
+        intent.apply {
+            track_author_text_view.text = getStringExtra(MediaPlayerService.TRACK_ARTIST)!!
+            track_title_text_view_1.text = getStringExtra(MediaPlayerService.TRACK_TITLE)!!
+            title_text_mini_player.text = getStringExtra(MediaPlayerService.TRACK_TITLE)!!
+            Picasso.get().load(getStringExtra(MediaPlayerService.IMAGE_URL)!!)
+                .into(cover_big_image_view)
         }
     }
 
@@ -281,14 +282,12 @@ class MainActivity : AppCompatActivity() {
                     play_button_or_pause.tag = ACTION_PAUSE
                     play_pause_button.tag = ACTION_PAUSE
                 }
-                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PREPARE_ACTION_KEY) == Player.ACTION_PREPARE -> {
+                intent?.getStringExtra(NotificationBroadcastReceiver.RECEIVE_PREPARE_ACTION_KEY) == ACTION_PREPARE -> {
                     firebaseViewModel.getMessages(player.currentTrack.id)
                     play_button_or_pause.tag = ACTION_PAUSE
                     play_pause_button.tag = ACTION_PAUSE
-                    fragmentState = saveFragmentState(intent)
-                    fragmentStateViewModel.save(fragmentState!!)
                     setFavouriteStatus()
-                    update()
+                    update(intent)
                 }
             }
         }

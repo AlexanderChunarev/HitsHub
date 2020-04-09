@@ -1,8 +1,13 @@
 package com.example.hitshub.activities
 
 import android.os.Bundle
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.hitshub.R
+import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYER
 import com.example.hitshub.models.User
 import com.example.hitshub.viewmodels.SplashViewModel
 
@@ -24,8 +29,14 @@ class SplashActivity : BaseActivity() {
     private fun getUserFromDataBase() {
         viewModel.setUser()
         viewModel.userInfoLiveData.observe(this@SplashActivity, Observer {
-            val user = User(it.uId, it.name, it.email, it.avatarUrl)
-            navigateTo(MainActivity::class.java, user)
+            val user = User(it.uId, it.name, it.email, it.avatarUrl).apply {
+                isAnonymous = it.isAuth
+            }
+            if (intent.action == WAKE_UP_MEDIA_PLAYER) {
+                navigateTo(MainActivity::class.java, user, ACTION_WAKE_UP)
+            } else {
+                navigateTo(MainActivity::class.java, user)
+            }
             finish()
         })
     }

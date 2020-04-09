@@ -45,7 +45,7 @@ class AlbumPlayerFragment : BaseFragment(), OnItemListener {
     private fun setBackPressCallback() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (!activity!!.findViewById<LinearLayout>(R.id.mini).isVisible) {
+                if (activity!!.findViewById<LinearLayout>(R.id.player_container).isVisible) {
                     motionLayout.transitionToStart()
                 } else {
                     navController.navigate(R.id.navigation_home)

@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.example.hitshub.activities.MainActivity.Companion.WAKE_UP_MEDIA_PLAYER
 import com.example.hitshub.extentions.changeSpinnerDialogState
 import com.example.hitshub.models.User
+import com.example.hitshub.utils.Constants.EMPTY_STRING
 import com.example.hitshub.utils.MessageUtils
 import com.example.hitshub.viewmodels.BaseViewModel
 
@@ -39,10 +41,13 @@ abstract class BaseActivity : AppCompatActivity() {
         })
     }
 
-    fun navigateTo(clazz: Class<*>, user: User? = null) {
+    fun navigateTo(clazz: Class<*>, user: User? = null, action: String = EMPTY_STRING) {
         val intent = Intent(this, clazz)
         if (user != null) {
             intent.putExtra(USER, user)
+        }
+        if (action.isNotEmpty()) {
+            intent.putExtra(WAKE_UP_MEDIA_PLAYER, action)
         }
         startActivity(intent)
     }
@@ -50,5 +55,6 @@ abstract class BaseActivity : AppCompatActivity() {
     companion object {
         const val USER = "user"
         const val SING_IN_CODE = 123
+        const val ACTION_WAKE_UP = "wake_up"
     }
 }

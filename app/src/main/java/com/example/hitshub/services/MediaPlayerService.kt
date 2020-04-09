@@ -66,8 +66,11 @@ class MediaPlayerService : Service() {
                 skip(FAST_REWIND_SELECTOR)
             }
             WAKE_UP_MEDIA_PLAYER -> {
-                playerStateIntent.setTrackInfo()
-                sendBroadcast(playerStateIntent)
+                Intent(BaseMediaFragment::class.java.toString()).apply {
+                    putExtra(RECEIVE_PREPARE_ACTION_KEY, ACTION_PREPARE)
+                    setTrackInfo()
+                    sendBroadcast(this)
+                }
             }
         }
         return START_STICKY
@@ -149,6 +152,7 @@ class MediaPlayerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         stopSelf()
+        player.pause()
     }
 
     private fun Intent.setTrackInfo() {

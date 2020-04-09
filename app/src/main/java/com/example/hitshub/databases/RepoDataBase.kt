@@ -18,7 +18,6 @@ import com.example.hitshub.utils.ArtistConverter
 @TypeConverters(ArtistConverter::class)
 abstract class RepoDataBase : RoomDatabase() {
     abstract fun trackDao(): TrackDao
-    // abstract fun userDao(): UserDao
 
     companion object {
         private const val DATABASE = "media_db"
